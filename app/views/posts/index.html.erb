@@ -1,0 +1,16 @@
+<h1>投稿コード一覧</h1>
+
+<% if user_signed_in? %>
+<%= link_to "新規投稿", new_post_path, class: "button" %>
+<% end %>
+
+<div class="posts">
+  <% @posts.each do |post| %>
+  <div class="post">
+    <h2><%= link_to post.title, post %></h2>
+    <p>投稿者: <%= post.user.email %> | レベル: <%= post.user.level %></p>
+    <p><%= truncate(post.content, length: 100) %></p>
+  </div>
+  <hr>
+  <% end %>
+</div>

@@ -1,0 +1,30 @@
+<h1>コードの新規投稿</h1>
+
+<%= form_with model: @post, local: true do |form| %>
+<% if @post.errors.any? %>
+<div id="error_explanation">
+  <h2><%= pluralize(@post.errors.count, "error") %> 件のエラーにより保存できませんでした:</h2>
+  <ul>
+    <% @post.errors.full_messages.each do |message| %>
+    <li><%= message %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
+
+<div class="field">
+  <%= form.label :title, "タイトル" %><br>
+  <%= form.text_field :title %>
+</div>
+
+<div class="field">
+  <%= form.label :content, "コード" %><br>
+  <%= form.text_area :content, rows: 10, cols: 50 %>
+</div>
+
+<div class="actions">
+  <%= form.submit "投稿する" %>
+</div>
+<% end %>
+
+<%= link_to '戻る', posts_path %>

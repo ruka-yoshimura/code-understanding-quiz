@@ -1,0 +1,14 @@
+<h1><%= @post.title %></h1>
+
+<p>
+  <strong>投稿者:</strong>
+  <%= @post.user.email %> (レベル: <%= @post.user.level %>)
+</p>
+
+<div class="code-block" style="background-color: #f4f4f4; padding: 10px; border-radius: 5px;">
+  <pre><code><%= @post.content %></code></pre>
+</div>
+
+<br>
+
+<%= link_to '戻る', posts_path %>
