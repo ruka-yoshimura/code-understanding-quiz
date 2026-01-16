@@ -1,0 +1,42 @@
+<div class="container">
+  <h1>クイズ</h1>
+
+  <div class="quiz-card">
+    <h2>問題</h2>
+    <p><%= @quiz.question %></p>
+
+    <code>
+      <pre><%= @quiz.original_code %></pre>
+    </code>
+
+    <div class="options">
+      <h3>選択肢</h3>
+      <ul>
+        <% [@quiz.answer, @quiz.option_1, @quiz.option_2].shuffle.each do |option| %>
+        <li>
+          <button onclick="checkAnswer(this, '<%= option == @quiz.answer %>')"><%= option %></button>
+        </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div id="explanation" style="display:none; margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
+      <h3>解説</h3>
+      <p><%= @quiz.explanation %></p>
+      <%= link_to "投稿に戻る", posts_path %>
+    </div>
+  </div>
+
+  <script>
+    function checkAnswer(btn, isCorrect) {
+      if (isCorrect === 'true') {
+        btn.style.backgroundColor = 'lightgreen';
+        alert('正解！');
+      } else {
+        btn.style.backgroundColor = 'lightpink';
+        alert('不正解...');
+      }
+      document.getElementById('explanation').style.display = 'block';
+    }
+  </script>
+</div>

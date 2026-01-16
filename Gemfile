@@ -66,3 +66,9 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+# Google Gemini API
+gem "ruby-gemini-ai"
+
+# Manage environment variables
+gem "dotenv-rails", groups: [:development, :test]
