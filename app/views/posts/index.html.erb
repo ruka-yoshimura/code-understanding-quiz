@@ -1,8 +1,6 @@
-<h1>投稿コード一覧</h1>
-
 <% if user_signed_in? %>
+<h1>投稿コード一覧</h1>
 <%= link_to "新規投稿", new_post_path, class: "button" %>
-<% end %>
 
 <div class="posts">
   <% @posts.each do |post| %>
@@ -14,3 +12,19 @@
   <hr>
   <% end %>
 </div>
+<% else %>
+<div class="hero-section">
+  <div class="hero-content">
+    <h1>Code Understanding Quiz</h1>
+    <p class="hero-description">
+      AIがあなたのコードからクイズを生成。<br>
+      コードを深く理解し、レベルアップを目指しましょう !
+    </p>
+    <div class="hero-actions">
+      <%= link_to "新規登録", new_user_registration_path, class: "button primary" %>
+      <%= link_to "ログイン", new_user_session_path, class: "button secondary" %>
+      <%= link_to "ゲストログイン", users_guest_sign_in_path, data: { "turbo-method": :post }, class: "button guest" %>
+    </div>
+  </div>
+</div>
+<% end %>

@@ -1,0 +1,62 @@
+ja:
+  activerecord:
+    models:
+      user: "ユーザー"
+      post: "投稿"
+      quiz: "クイズ"
+    attributes:
+      user:
+        email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "パスワード（確認用）"
+        level: "レベル"
+        xp: "経験値"
+        remember_me: "ログイン状態を保持する"
+      post:
+        title: "タイトル"
+        content: "コードの内容"
+      quiz:
+        question: "問題"
+        answer: "正解"
+        option_1: "選択肢1"
+        option_2: "選択肢2"
+        explanation: "解説"
+  helpers:
+    submit:
+      create: "作成"
+      update: "更新"
+      submit: "送信"
+  devise:
+    sessions:
+      signed_in: "ログインしました。"
+      signed_out: "ログアウトしました。"
+      already_signed_out: "ログアウトしました。"
+      new:
+        sign_in: "ログイン"
+        remember_me: "ログイン状態を保持する"
+    registrations:
+      signed_up: "アカウント登録が完了しました。"
+      updated: "アカウント情報を変更しました。"
+      destroyed: "アカウントを削除しました。"
+      new:
+        sign_up: "新規登録"
+      edit:
+        update: "更新"
+    shared:
+      links:
+        sign_in: "ログイン"
+        sign_up: "新規登録"
+        forgot_your_password: "パスワードを忘れましたか？"
+      minimum_password_length: "（最小 %{count} 文字）"
+    passwords:
+      new:
+        forgot_your_password: "パスワードを忘れましたか？"
+        send_me_reset_password_instructions: "パスワード再設定の指示を送信する"
+    confirmations:
+      new:
+        resend_confirmation_instructions: "本人確認の指示を再送する"
+  errors:
+    messages:
+      not_saved:
+        one: "1 件のエラーにより %{resource} を保存できませんでした"
+        other: "%{count} 件のエラーにより %{resource} を保存できませんでした"

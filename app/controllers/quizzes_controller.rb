@@ -4,10 +4,6 @@ class QuizzesController < ApplicationController
   def create
     post = Post.find(params[:post_id])
 
-    # Check if a quiz already exists for this post (optional optimization)
-    # quiz = Quiz.find_by(original_code: post.content)
-    # if quiz ...
-
     service = QuizGeneratorService.new(post.content)
     quiz_data = service.call
 

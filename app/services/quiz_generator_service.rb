@@ -42,13 +42,17 @@ class QuizGeneratorService
     return nil unless conn.status == 200
 
     models = JSON.parse(conn.body)['models'] || []
-    # Priority: Flash Latest (1.5) -> Pro Latest
+    # 特定のアカウントで 2.0-flash-lite が制限されている場合があるためのモデル優先順位
     target = models.find { |m| m['name'].include?('gemini-flash-latest') } ||
-             models.find { |m| m['name'].include?('gemini-pro-latest') } ||
+             models.find { |m| m['name'].include?('gemini-1.5-flash') } ||
+             models.find { |m| m['name'].include?('gemini-flash-lite-latest') } ||
+             models.find { |m| m['name'] == 'models/gemini-2.0-flash-lite' } ||
+             models.find { |m| m['name'].include?('flash') } ||
              models.find { |m| m['name'].include?('gemini') }
 
     target ? target['name'] : nil
   rescue
+    # API接続エラー時などは安全にnilを返し、呼び出し元でハンドリングする
     nil
   end
 
@@ -79,10 +83,8 @@ class QuizGeneratorService
 
   def parse_response(body)
     json = JSON.parse(body)
-    # Extract the text content from Gemini's response structure
+    # Geminiのレスポンスからテキスト部分（JSON文字列）を抽出してハッシュに変換
     text = json.dig('candidates', 0, 'content', 'parts', 0, 'text')
-
-    # Parse the inner JSON string into a Ruby Hash
     JSON.parse(text)
   end
 end

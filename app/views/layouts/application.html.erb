@@ -11,13 +11,29 @@
   <%= javascript_importmap_tags %>
 </head>
 
-<body>
+<header class="main-header">
+  <nav>
+    <%= link_to "CodeQuiz", root_path, class: "logo" %>
+    <div class="nav-links">
+      <%= link_to "投稿一覧", posts_path %>
+      <% if user_signed_in? %>
+      <%= link_to "新規投稿", new_post_path %>
+      <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-button" %>
+      <% else %>
+      <%= link_to "ログイン", new_user_session_path %>
+      <%= link_to "新規登録", new_user_registration_path %>
+      <% end %>
+    </div>
+  </nav>
+</header>
+
+<main class="container">
   <% flash.each do |message_type, message| %>
-  <div class="flash-message <%= message_type %>" style="padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; background-color: #f0f0f0;">
+  <div class="flash-message <%= message_type %>">
     <%= message %>
   </div>
   <% end %>
   <%= yield %>
-</body>
+</main>
 
 </html>
