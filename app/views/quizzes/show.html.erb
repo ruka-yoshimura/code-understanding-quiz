@@ -1,42 +1,52 @@
-<div class="container">
-  <h1>クイズ</h1>
-
+<div class="auth-container">
   <div class="quiz-card">
-    <h2>問題</h2>
-    <p><%= @quiz.question %></p>
+    <h1>クイズに挑戦</h1>
 
-    <code>
-      <pre><%= @quiz.original_code %></pre>
-    </code>
+    <div class="form-field">
+      <h2>問題</h2>
+      <p><%= @quiz.question %></p>
+    </div>
+
+    <div class="code-block">
+      <pre><code><%= @quiz.original_code %></code></pre>
+    </div>
 
     <div class="options">
-      <h3>選択肢</h3>
-      <ul>
+      <h2>選択肢</h2>
+      <div class="options-list">
         <% [@quiz.answer, @quiz.option_1, @quiz.option_2].shuffle.each do |option| %>
-        <li>
-          <button onclick="checkAnswer(this, '<%= option == @quiz.answer %>')"><%= option %></button>
-        </li>
+        <button class="option-button" onclick="checkAnswer(this, '<%= option == @quiz.answer %>')">
+          <%= option %>
+        </button>
         <% end %>
-      </ul>
+      </div>
     </div>
 
-    <div id="explanation" style="display:none; margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
+    <div id="explanation" class="explanation-card">
       <h3>解説</h3>
       <p><%= @quiz.explanation %></p>
-      <%= link_to "投稿に戻る", posts_path %>
+      <div class="auth-links">
+        <%= link_to "投稿一覧に戻る", posts_path, class: "button secondary" %>
+      </div>
     </div>
   </div>
-
-  <script>
-    function checkAnswer(btn, isCorrect) {
-      if (isCorrect === 'true') {
-        btn.style.backgroundColor = 'lightgreen';
-        alert('正解！');
-      } else {
-        btn.style.backgroundColor = 'lightpink';
-        alert('不正解...');
-      }
-      document.getElementById('explanation').style.display = 'block';
-    }
-  </script>
 </div>
+
+<script>
+  function checkAnswer(btn, isCorrect) {
+    // 全てのボタンを無効化
+    document.querySelectorAll('.option-button').forEach(b => b.disabled = true);
+
+    if (isCorrect === 'true') {
+      btn.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+      btn.style.borderColor = '#10b981';
+      btn.style.color = '#10b981';
+    } else {
+      btn.style.backgroundColor = 'rgba(244, 63, 94, 0.2)';
+      btn.style.borderColor = '#f43f5e';
+      btn.style.color = '#f43f5e';
+    }
+
+    document.getElementById('explanation').style.display = 'block';
+  }
+</script>
