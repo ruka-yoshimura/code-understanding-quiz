@@ -35,7 +35,7 @@
 </section>
 
 <div class="index-header">
-  <h1>投稿コード一覧</h1>
+  <h1>マイコード</h1>
   <%= link_to "新規投稿", new_post_path, class: "button primary" %>
 </div>
 
@@ -44,7 +44,6 @@
   <div class="post-card">
     <h2 style="margin-top:0;"><%= link_to post.title, post %></h2>
     <p style="font-size: 0.875rem; color: #94a3b8;">
-      投稿者: <%= post.user.email.split('@').first %> |
       作成日: <%= post.created_at.strftime("%Y/%m/%d") %>
     </p>
     <p><%= truncate(post.content, length: 150) %></p>

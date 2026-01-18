@@ -1,5 +1,9 @@
 class HomeController < ApplicationController
   def index
-    @posts = Post.all.order(created_at: :desc)
+    if user_signed_in?
+      @posts = current_user.posts.order(created_at: :desc)
+    else
+      @posts = [] # Landing page state
+    end
   end
 end

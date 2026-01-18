@@ -2,13 +2,6 @@
   <div class="auth-card" style="max-width: 800px;">
     <h1><%= @post.title %></h1>
 
-    <div class="form-field">
-      <p style="color: #94a3b8; font-size: 0.875rem;">
-        <strong>投稿者:</strong>
-        <%= @post.user.email.split('@').first %> (レベル: <%= @post.user.level %>)
-      </p>
-    </div>
-
     <div class="code-block">
       <pre><code><%= @post.content %></code></pre>
     </div>
