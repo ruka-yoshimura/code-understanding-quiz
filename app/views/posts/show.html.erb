@@ -1,16 +1,24 @@
-<h1><%= @post.title %></h1>
+<div class="auth-container">
+  <div class="auth-card" style="max-width: 800px;">
+    <h1><%= @post.title %></h1>
 
-<p>
-  <strong>投稿者:</strong>
-  <%= @post.user.email %> (レベル: <%= @post.user.level %>)
-</p>
+    <div class="form-field">
+      <p style="color: #94a3b8; font-size: 0.875rem;">
+        <strong>投稿者:</strong>
+        <%= @post.user.email.split('@').first %> (レベル: <%= @post.user.level %>)
+      </p>
+    </div>
 
-<div class="code-block" style="background-color: #f4f4f4; padding: 10px; border-radius: 5px;">
-  <pre><code><%= @post.content %></code></pre>
+    <div class="code-block">
+      <pre><code><%= @post.content %></code></pre>
+    </div>
+
+    <div class="form-actions">
+      <%= button_to "このコードでクイズを作る", quizzes_path(post_id: @post.id), method: :post, class: "button primary", form: { data: { turbo: false } } %>
+    </div>
+
+    <div class="auth-links">
+      <%= link_to 'ホームに戻る', root_path %>
+    </div>
+  </div>
 </div>
-
-<br>
-
-<%= button_to "このコードでクイズを作る", quizzes_path(post_id: @post.id), method: :post, class: "button-primary", form: { data: { turbo: false } } %>
-<br>
-<%= link_to '戻る', root_path %>
