@@ -1,0 +1,70 @@
+<% if user_signed_in? %>
+<section class="profile-dashboard">
+  <div class="dashboard-header">
+    <div class="user-info">
+      <h2>こんにちは、<%= current_user.email.split('@').first %> さん</h2>
+      <p>あなたのコード理解を深め、レベルアップを目指しましょう！</p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-label">現在のレベル</span>
+      <span class="stat-value"><%= current_user.level %></span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">累計経験値</span>
+      <span class="stat-value"><%= current_user.xp %> <small style="font-size: 0.5em; color: #64748b;">XP</small></span>
+    </div>
+  </div>
+
+  <div class="xp-section">
+    <%
+        # 次のレベルまでの必要経験値を計算（仮のロジック: 1レベルごとに 100 XP とする）
+        next_level_xp = 100
+        xp_progress = [((current_user.xp % next_level_xp).to_f / next_level_xp * 100).round, 100].min
+      %>
+    <div class="xp-label-row">
+      <span>次のレベルまで</span>
+      <span><%= xp_progress %>%</span>
+    </div>
+    <div class="xp-progress-bar">
+      <div class="xp-progress-fill" style="width: <%= xp_progress %>%"></div>
+    </div>
+  </div>
+</section>
+
+<div class="index-header">
+  <h1>投稿コード一覧</h1>
+  <%= link_to "新規投稿", new_post_path, class: "button primary" %>
+</div>
+
+<div class="posts">
+  <% @posts.each do |post| %>
+  <div class="post-card">
+    <h2 style="margin-top:0;"><%= link_to post.title, post %></h2>
+    <p style="font-size: 0.875rem; color: #94a3b8;">
+      投稿者: <%= post.user.email.split('@').first %> |
+      作成日: <%= post.created_at.strftime("%Y/%m/%d") %>
+    </p>
+    <p><%= truncate(post.content, length: 150) %></p>
+    <%= link_to "クイズに挑戦する →", post, class: "button secondary", style: "margin-top: 10px; font-size: 0.875rem;" %>
+  </div>
+  <% end %>
+</div>
+<% else %>
+<div class="hero-section">
+  <div class="hero-content">
+    <h1>Code Understanding Quiz</h1>
+    <p class="hero-description">
+      AIがあなたのコードからクイズを生成。<br>
+      コードを深く理解し、レベルアップを目指しましょう !
+    </p>
+    <div class="hero-actions">
+      <%= link_to "新規登録", new_user_registration_path, class: "button primary" %>
+      <%= link_to "ログイン", new_user_session_path, class: "button secondary" %>
+      <%= link_to "ゲストログイン", users_guest_sign_in_path, data: { "turbo-method": :post }, class: "button guest" %>
+    </div>
+  </div>
+</div>
+<% end %>

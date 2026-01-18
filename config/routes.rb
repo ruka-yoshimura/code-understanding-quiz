@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :quizzes, only: [:create, :show]
-  root 'posts#index'
-  resources :posts
+  root 'home#index'
+  resources :posts, except: [:index]
   devise_for :users, controllers: {
     sessions: 'users/sessions'
   }

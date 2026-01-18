@@ -15,7 +15,7 @@
   <nav>
     <%= link_to "Code Understanding Quiz", root_path, class: "logo" %>
     <div class="nav-links">
-      <%= link_to "投稿一覧", posts_path %>
+      <%= link_to "ホーム", root_path %>
       <% if user_signed_in? %>
       <%= link_to "新規投稿", new_post_path %>
       <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-button" %>
