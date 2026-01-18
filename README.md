@@ -13,7 +13,7 @@
 <table>
   <tr>
     <td width="50%">
-      <p align="center"><b>【新規登録投稿】</b></p>
+      <p align="center"><b>【新規登録画面】</b></p>
       <img src="https://github.com/user-attachments/assets/45c6e686-befd-4937-a4c1-b47b9622a4d6" width="100%">
     </td>
     <td width="50%">
