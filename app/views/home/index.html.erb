@@ -7,15 +7,21 @@
     </div>
   </div>
 
-  <div class="stats-grid">
+  <div class="user-stats">
     <div class="stat-card">
-      <span class="stat-label">現在のレベル</span>
-      <span class="stat-value"><%= current_user.level %></span>
+      <div class="stat-label">現在のレベル</div>
+      <div class="stat-value"><%= current_user.level %></div>
     </div>
     <div class="stat-card">
-      <span class="stat-label">累計経験値</span>
-      <span class="stat-value"><%= current_user.xp %> <small style="font-size: 0.5em; color: #64748b;">XP</small></span>
+      <div class="stat-label">累積経験値</div>
+      <div class="stat-value"><%= current_user.xp %> <span style="font-size: 1rem; color: #94a3b8;">XP</span></div>
     </div>
+    <% if current_user.daily_streak > 0 %>
+    <div class="stat-card streak-highlight">
+      <div class="stat-label">連続回答</div>
+      <div class="stat-value">🔥 <%= current_user.daily_streak %> 日</div>
+    </div>
+    <% end %>
   </div>
 
   <div class="xp-section">

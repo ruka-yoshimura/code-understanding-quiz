@@ -32,4 +32,24 @@ class QuizzesController < ApplicationController
   def show
     @quiz = Quiz.find(params[:id])
   end
+
+  # クイズの回答を処理する
+  def answer
+    @quiz = Quiz.find(params[:id])
+    is_correct = params[:is_correct]
+
+    # 回答履歴を保存
+    current_user.quiz_answers.create!(
+      quiz: @quiz,
+      correct: is_correct
+    )
+
+    # 正解の場合のみ継続日数を更新し、経験値を付与
+    if is_correct
+      current_user.update_streak!
+      current_user.gain_xp(User::XP_PER_CORRECT_ANSWER)
+    end
+
+    render json: { status: 'ok', level: current_user.level, xp: current_user.xp }
+  end
 end

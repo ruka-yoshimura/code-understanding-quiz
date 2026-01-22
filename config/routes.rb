@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
-  resources :quizzes, only: [:create, :show]
+  resources :quizzes, only: [:create, :show] do # クイズのリソースを定義
+    member do # 特定のクイズに対するアクション
+      post :answer # 回答を投稿するアクション
+    end
+  end
   root 'home#index'
   resources :posts, except: [:index]
   devise_for :users, controllers: {

@@ -17,8 +17,15 @@
 /* Global Styles */
 body {
   margin: 0;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
   background-color: #0f172a;
   color: #f8fafc;
 }
@@ -143,10 +150,8 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: linear-gradient(
-      rgba(15, 23, 42, 0.6),
-      rgba(15, 23, 42, 0.6)
-    ),
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.6)),
     url("landing_page_bg.png");
   background-size: cover;
   background-position: center;
@@ -323,7 +328,8 @@ a:hover {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2),
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.2),
     0 10px 10px -5px rgba(0, 0, 0, 0.1);
 }
 
@@ -527,10 +533,27 @@ a:hover {
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 15px;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .post-card:hover {
   border-color: rgba(56, 189, 248, 0.3);
   transform: translateY(-2px);
+}
+
+/* 継続日数のハイライト */
+.streak-highlight {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.2),
+    rgba(239, 68, 68, 0.2)
+  ) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+.streak-highlight .stat-value {
+  color: #f59e0b !important;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
 }

@@ -33,11 +33,29 @@
 </div>
 
 <script>
-  function checkAnswer(btn, isCorrect) {
+  async function checkAnswer(btn, isCorrect) {
     // 全てのボタンを無効化
     document.querySelectorAll('.option-button').forEach(b => b.disabled = true);
 
-    if (isCorrect === 'true') {
+    const isCorrectBool = isCorrect === 'true';
+
+    // サーバーに回答を送信
+    try {
+      await fetch(`/quizzes/<%= @quiz.id %>/answer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          is_correct: isCorrectBool
+        })
+      });
+    } catch (error) {
+      console.error('Error submitting answer:', error);
+    }
+
+    if (isCorrectBool) {
       btn.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
       btn.style.borderColor = '#10b981';
       btn.style.color = '#10b981';
