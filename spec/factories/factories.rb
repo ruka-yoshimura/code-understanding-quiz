@@ -14,6 +14,7 @@ FactoryBot.define do
   end
 
   factory :quiz do
+    association :post
     original_code { "def hello\n  puts 'world'\nend" }
     question { 'この実行結果は何ですか？' }
     answer { 'world' }

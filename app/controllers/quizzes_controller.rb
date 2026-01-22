@@ -3,12 +3,14 @@ class QuizzesController < ApplicationController
 
   def create
     post = Post.find(params[:post_id])
+    # 既存の問題文を取得して重複を避ける
+    existing_questions = post.quizzes.pluck(:question)
 
-    service = QuizGeneratorService.new(post.content)
+    service = QuizGeneratorService.new(post.content, existing_questions)
     quiz_data = service.call
 
     if quiz_data
-      @quiz = Quiz.new(
+      @quiz = post.quizzes.build(
         original_code: post.content,
         question: quiz_data['question'],
         answer: quiz_data['answer'],

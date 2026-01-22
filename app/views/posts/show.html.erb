@@ -6,6 +6,12 @@
       <pre><code><%= @post.content %></code></pre>
     </div>
 
+    <div class="form-field">
+      <p style="color: #94a3b8; font-size: 0.875rem;">
+        これまでに生成されたクイズ: <strong><%= @post.quizzes.count %></strong> 回
+      </p>
+    </div>
+
     <div class="form-actions">
       <%= button_to "このコードでクイズを作る", quizzes_path(post_id: @post.id), method: :post, class: "button primary", form: { data: { turbo: false } } %>
     </div>

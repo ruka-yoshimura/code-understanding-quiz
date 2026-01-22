@@ -4,8 +4,9 @@ require 'json'
 class QuizGeneratorService
   BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
 
-  def initialize(code_snippet)
+  def initialize(code_snippet, existing_questions = [])
     @code_snippet = code_snippet
+    @existing_questions = existing_questions
     @api_key = ENV['GEMINI_API_KEY']
   end
 
@@ -78,7 +79,16 @@ class QuizGeneratorService
 
       Target Code:
       #{@code_snippet}
+
+      #{avoid_questions_text}
     TEXT
+  end
+
+  def avoid_questions_text
+    return "" if @existing_questions.empty?
+
+    "重要：以下の問題とは異なる、新しい視点のクイズを作成してください：\n" +
+    @existing_questions.map { |q| "- #{q}" }.join("\n")
   end
 
   def parse_response(body)
