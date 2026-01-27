@@ -51,6 +51,14 @@ class User < ApplicationRecord
         self.current_streak = 0 # ボーナス付与後にリセット
       end
 
+      # ストリークボーナス倍率の適用
+      # 2日目から発動: 2日=1.1倍, 3日=1.2倍 ... 最大1.5倍
+      multiplier = streak_multiplier
+      if multiplier > 1.0
+        total_xp = (total_xp * multiplier).round
+        result[:streak_multiplier] = multiplier
+      end
+
       gain_xp(total_xp)
       update_streak!
 
@@ -71,6 +79,19 @@ class User < ApplicationRecord
     end
 
     result
+  end
+
+  # 現在の継続日数に基づくXP獲得倍率を計算
+  # 1日目: 1.0倍, 2日目: 1.1倍, ... 6日目以降: 1.5倍（上限）
+  def streak_multiplier
+    return 1.0 if daily_streak < 2
+
+    # 2日目なら daily_streak=2 -> bonus 0.1
+    # bonus = (daily_streak - 1) * 0.1
+    bonus = (daily_streak - 1) * 0.1
+
+    # 最大 0.5 (合計 1.5倍) まで
+    [1.0 + bonus, 1.5].min.round(1)
   end
 
   # 経験値を獲得し、必要ならレベルアップする

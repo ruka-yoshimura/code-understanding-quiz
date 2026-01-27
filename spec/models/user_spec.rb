@@ -158,6 +158,53 @@ RSpec.describe User, type: :model do
           expect(user.incorrect_streak).to eq 0
         end
       end
+
+      context 'ストリークボーナスの検証' do
+        it '継続1日目( streak < 2 )なら倍率は1.0であること' do
+          user.update(daily_streak: 1)
+          result = user.answer_quiz(quiz, true)
+          # (基本10 + 初見5) * 1.0 = 15
+          expect(result[:xp_gained]).to eq 15
+        end
+
+        it '継続2日目なら倍率は1.1であること' do
+          user.update(daily_streak: 2) # 2日目として設定
+          result = user.answer_quiz(quiz, true)
+          # (基本10 + 初見5) * 1.1 = 16.5 -> 17
+          expect(result[:xp_gained]).to eq 17
+          expect(result[:streak_multiplier]).to eq 1.1
+        end
+
+        it '継続3日目なら倍率は1.2であること' do
+          user.update(daily_streak: 3)
+          result = user.answer_quiz(quiz, true)
+          # (基本10 + 初見5) * 1.2 = 18.0 -> 18
+          expect(result[:xp_gained]).to eq 18
+          expect(result[:streak_multiplier]).to eq 1.2
+        end
+
+        it '継続6日目以降は1.5倍でキャップされること' do
+          user.update(daily_streak: 10)
+          result = user.answer_quiz(quiz, true)
+          # (基本10 + 初見5) * 1.5 = 22.5 -> 23
+          expect(result[:xp_gained]).to eq 23
+          expect(result[:streak_multiplier]).to eq 1.5
+        end
+
+        it 'コンボボーナスも含めた合計に対して倍率がかかること' do
+          # 3連続正解ボーナスで +20
+          # streak 3日目で x1.2
+          user.update(current_streak: 2, daily_streak: 3)
+          result = user.answer_quiz(quiz, true)
+
+          # Base(10) + Combo(20) = 30
+          # 30 * 1.2 = 36
+          # 初見ボーナス(5)がある場合: (10+5+20)*1.2 = 35*1.2 = 42
+
+          # このテストケースでは初見ボーナスが有効なので 35 * 1.2 = 42
+          expect(result[:xp_gained]).to eq 42
+        end
+      end
     end
   end
 end
