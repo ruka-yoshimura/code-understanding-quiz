@@ -38,18 +38,15 @@ class QuizzesController < ApplicationController
     @quiz = Quiz.find(params[:id])
     is_correct = params[:is_correct]
 
-    # 回答履歴を保存
-    current_user.quiz_answers.create!(
-      quiz: @quiz,
-      correct: is_correct
-    )
+    # Userモデルのメソッドで回答処理（履歴保存、XP付与、ストリーク更新）を実行
+    result = current_user.answer_quiz(@quiz, is_correct)
 
-    # 正解の場合のみ継続日数を更新し、経験値を付与
-    if is_correct
-      current_user.update_streak!
-      current_user.gain_xp(User::XP_PER_CORRECT_ANSWER)
-    end
-
-    render json: { status: 'ok', level: current_user.level, xp: current_user.xp }
+    render json: {
+      status: 'ok',
+      level: current_user.level,
+      xp: current_user.xp,
+      xp_gained: result[:xp_gained],
+      bonus_applied: result[:bonus_applied]
+    }
   end
 end

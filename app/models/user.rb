@@ -9,6 +9,69 @@ class User < ApplicationRecord
 
   # 1回の正解で獲得できる経験値
   XP_PER_CORRECT_ANSWER = 10
+  # 初見正解ボーナス
+  FIRST_ATTEMPT_BONUS = 5
+  # 3連続正解ボーナス
+  COMBO_BONUS = 20
+  # 連続正解の目標数
+  COMBO_THRESHOLD = 3
+  # 3連続不正解ペナルティ
+  PENALTY_AMOUNT = 10
+  # 連続不正解の閾値
+  PENALTY_THRESHOLD = 3
+
+  # クイズに回答し、結果に基づいて経験値やストリークを更新する
+  def answer_quiz(quiz, is_correct)
+    # 過去に回答したことがあるか確認（ボーナス判定用）
+    has_answered_before = quiz_answers.exists?(quiz: quiz)
+
+    # 回答履歴を保存
+    quiz_answers.create!(quiz: quiz, correct: is_correct)
+
+    result = { xp_gained: 0, bonus_applied: false, combo_bonus: false, penalty_applied: false }
+
+    if is_correct
+      # 正解の場合
+      # 基本経験値
+      total_xp = XP_PER_CORRECT_ANSWER
+
+      # 初見正解ボーナス
+      unless has_answered_before
+        total_xp += FIRST_ATTEMPT_BONUS
+        result[:bonus_applied] = true
+      end
+
+      # コンボ処理
+      self.current_streak += 1
+      self.incorrect_streak = 0 # 不正解ストリークはリセット
+
+      if self.current_streak >= COMBO_THRESHOLD
+        total_xp += COMBO_BONUS
+        result[:combo_bonus] = true
+        self.current_streak = 0 # ボーナス付与後にリセット
+      end
+
+      gain_xp(total_xp)
+      update_streak!
+
+      result[:xp_gained] = total_xp
+    else
+      # 不正解の場合
+      self.current_streak = 0 # 正解ストリークはリセット (コンボ終了)
+      # incorrect_streakがnilの場合に備えて0をセットする
+      self.incorrect_streak = (self.incorrect_streak || 0) + 1
+
+      if self.incorrect_streak >= PENALTY_THRESHOLD
+        lose_xp(PENALTY_AMOUNT)
+        result[:penalty_applied] = true
+        self.incorrect_streak = 0 # ペナルティ適用後にリセット
+      end
+
+      save!
+    end
+
+    result
+  end
 
   # 経験値を獲得し、必要ならレベルアップする
   def gain_xp(amount)
@@ -20,6 +83,12 @@ class User < ApplicationRecord
       self.level += 1
     end
 
+    save!
+  end
+
+  # 経験値を減らす（ただし0未満にはならない、レベルダウンもしない）
+  def lose_xp(amount)
+    self.xp = [self.xp - amount, 0].max
     save!
   end
 
@@ -49,8 +118,7 @@ class User < ApplicationRecord
   def self.guest
     find_or_create_by!(email: 'guest@example.com') do |user|
       user.password = SecureRandom.urlsafe_base64
-      user.level = 1
-      user.xp = 0
+      # 開発用に初期レベルを設定したければここで
     end
   end
 end
