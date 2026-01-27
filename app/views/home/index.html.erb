@@ -2,7 +2,12 @@
 <section class="profile-dashboard">
   <div class="dashboard-header">
     <div class="user-info">
-      <h2>こんにちは、<%= current_user.email.split('@').first %> さん</h2>
+      <h2>
+        こんにちは、<%= current_user.email.split('@').first %> さん
+        <span style="font-size: 0.8rem; margin-left: 10px; padding: 2px 8px; border-radius: 12px; background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+          <%= user_title(current_user) %>
+        </span>
+      </h2>
       <p>あなたのコード理解を深め、レベルアップを目指しましょう！</p>
     </div>
   </div>
