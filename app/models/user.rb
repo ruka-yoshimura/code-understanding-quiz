@@ -19,6 +19,8 @@ class User < ApplicationRecord
   PENALTY_AMOUNT = 10
   # 連続不正解の閾値
   PENALTY_THRESHOLD = 3
+  # レベル上限
+  MAX_LEVEL = 50
 
   # クイズに回答し、結果に基づいて経験値やストリークを更新する
   def answer_quiz(quiz, is_correct)
@@ -99,7 +101,8 @@ class User < ApplicationRecord
     self.xp += amount
 
     # レベルアップ判定（ループで複数レベルアップにも対応）
-    while xp >= required_xp_for_next_level
+    # レベル上限(50)に達している場合はレベルアップしない
+    while self.level < MAX_LEVEL && xp >= required_xp_for_next_level
       self.xp -= required_xp_for_next_level
       self.level += 1
     end

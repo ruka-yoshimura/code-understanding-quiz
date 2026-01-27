@@ -6,7 +6,7 @@ class QuizzesController < ApplicationController
     # 既存の問題文を取得して重複を避ける
     existing_questions = post.quizzes.pluck(:question)
 
-    service = QuizGeneratorService.new(post.content, existing_questions)
+    service = QuizGeneratorService.new(post.content, existing_questions, current_user.level)
     quiz_data = service.call
 
     if quiz_data

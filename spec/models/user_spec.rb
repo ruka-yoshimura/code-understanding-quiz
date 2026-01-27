@@ -206,5 +206,20 @@ RSpec.describe User, type: :model do
         end
       end
     end
+
+    describe '#gain_xp (Level Cap)' do
+      let(:user) { create(:user, level: 49, xp: 2400) }
+
+      it 'レベル50までは正常にレベルアップすること' do
+        expect(user.level).to eq 50
+      end
+
+      it 'レベル50に達した後は経験値が増えてもレベルが上がらないこと' do
+        user.update(level: 50, xp: 0)
+        user.gain_xp(3000)
+        expect(user.level).to eq 50
+        expect(user.xp).to eq 3000
+      end
+    end
   end
 end
