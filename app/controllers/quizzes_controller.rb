@@ -24,8 +24,10 @@ class QuizzesController < ApplicationController
       else
         redirect_to post_path(post), alert: 'クイズの保存に失敗しました。'
       end
+    elsif service.error_type == :rate_limit
+      redirect_to post_path(post), alert: 'APIの利用制限に達しました。1分ほど待ってから再度お試しください。'
     else
-      redirect_to post_path(post), alert: 'AIによるクイズ生成に失敗しました（混雑している可能性があります）。'
+      redirect_to post_path(post), alert: 'AIによるクイズ生成に失敗しました。時間をおいて再度お試しください。'
     end
   end
 
@@ -39,14 +41,27 @@ class QuizzesController < ApplicationController
     is_correct = params[:is_correct]
 
     # Userモデルのメソッドで回答処理（履歴保存、XP付与、ストリーク更新）を実行
-    result = current_user.answer_quiz(@quiz, is_correct)
+    @result = current_user.answer_quiz(@quiz, is_correct)
 
-    render json: {
-      status: 'ok',
-      level: current_user.level,
-      xp: current_user.xp,
-      xp_gained: result[:xp_gained],
-      bonus_applied: result[:bonus_applied]
-    }
+    respond_to do |format|
+      format.json do
+        render json: {
+          status: 'ok',
+          level: current_user.level,
+          xp: current_user.xp,
+          xp_gained: @result[:xp_gained],
+          bonus_applied: @result[:bonus_applied],
+          combo_bonus: @result[:combo_bonus],
+          penalty_applied: @result[:penalty_applied],
+          level_up: @result[:level_up],
+          old_level: @result[:old_level],
+          new_level: @result[:new_level],
+          new_title: view_context.user_title(current_user),
+          streak_multiplier: @result[:streak_multiplier],
+          daily_streak: @result[:daily_streak]
+        }
+      end
+      format.turbo_stream
+    end
   end
 end

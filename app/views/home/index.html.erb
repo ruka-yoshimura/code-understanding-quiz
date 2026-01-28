@@ -4,43 +4,38 @@
     <div class="user-info">
       <h2>
         こんにちは、<%= current_user.email.split('@').first %> さん
-        <span style="font-size: 0.8rem; margin-left: 10px; padding: 2px 8px; border-radius: 12px; background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
-          <%= user_title(current_user) %>
-        </span>
+        <span class="user-title" id="dashboard-user-title"><%= user_title(current_user) %></span>
       </h2>
       <p>あなたのコード理解を深め、レベルアップを目指しましょう！</p>
     </div>
+    <div class="stats-row">
+      <span class="user-name"><%= current_user.email %></span>
+      <span class="user-level" id="dashboard-user-level"><%= current_user.level %></span>
+    </div>
   </div>
 
-  <div class="user-stats">
+  <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-label">現在のレベル</div>
       <div class="stat-value"><%= current_user.level %></div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">累積経験値</div>
-      <div class="stat-value"><%= current_user.xp %> <span style="font-size: 1rem; color: #94a3b8;">XP</span></div>
+      <div class="stat-label">現在のXP</div>
+      <div class="stat-value" id="dashboard-user-xp"><%= current_user.xp %></div>
     </div>
-    <% if current_user.daily_streak > 0 %>
-    <div class="stat-card streak-highlight">
+    <div class="stat-card" id="user-streak-container">
       <div class="stat-label">連続回答</div>
-      <div class="stat-value">🔥 <%= current_user.daily_streak %> 日</div>
+      <div class="stat-value">🔥 <span id="dashboard-user-daily-streak"><%= current_user.daily_streak %></span> 日</div>
     </div>
-    <% end %>
   </div>
 
-  <div class="xp-section">
-    <%
-        # 次のレベルまでの必要経験値を計算（仮のロジック: 1レベルごとに 100 XP とする）
-        next_level_xp = 100
-        xp_progress = [((current_user.xp % next_level_xp).to_f / next_level_xp * 100).round, 100].min
-      %>
+  <div class="xp-section" id="user-xp-section">
     <div class="xp-label-row">
       <span>次のレベルまで</span>
-      <span><%= xp_progress %>%</span>
+      <span id="dashboard-user-xp-percentage-text"><%= current_user.xp_progress_percentage %>%</span>
     </div>
     <div class="xp-progress-bar">
-      <div class="xp-progress-fill" style="width: <%= xp_progress %>%"></div>
+      <div class="xp-progress-fill" id="dashboard-user-xp-progress-fill" style="width: <%= current_user.xp_progress_percentage %>%"></div>
     </div>
   </div>
 </section>

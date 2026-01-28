@@ -2,6 +2,7 @@ require 'faraday'
 require 'json'
 
 class QuizGeneratorService
+  attr_reader :error_type
   BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
 
   def initialize(code_snippet, existing_questions = [], level = 1)
@@ -9,6 +10,7 @@ class QuizGeneratorService
     @existing_questions = existing_questions
     @level = level
     @api_key = ENV['GEMINI_API_KEY']
+    @error_type = nil
   end
 
   def call
@@ -28,6 +30,10 @@ class QuizGeneratorService
 
     if response.status == 200
       parse_response(response.body)
+    elsif response.status == 429
+      @error_type = :rate_limit
+      Rails.logger.error "Gemini API Rate Limit Exceeded: #{response.body}"
+      nil
     else
       Rails.logger.error "Gemini API Error: #{response.status} - #{response.body}"
       nil
@@ -40,22 +46,27 @@ class QuizGeneratorService
   private
 
   def find_model
-    conn = Faraday.get("#{BASE_URL}/models?key=#{@api_key}")
-    return nil unless conn.status == 200
+    Rails.cache.fetch("gemini_model_name", expires_in: 24.hours) do
+      Rails.logger.info "QuizGeneratorService: Fetching models from Gemini API"
+      conn = Faraday.get("#{BASE_URL}/models?key=#{@api_key}")
+      if conn.status == 200
+        models = JSON.parse(conn.body)['models'] || []
+        target = models.find { |m| m['name'].include?('gemini-flash-latest') } ||
+                 models.find { |m| m['name'].include?('gemini-1.5-flash') } ||
+                 models.find { |m| m['name'].include?('gemini-flash-lite-latest') } ||
+                 models.find { |m| m['name'] == 'models/gemini-2.0-flash-lite' } ||
+                 models.find { |m| m['name'].include?('flash') } ||
+                 models.find { |m| m['name'].include?('gemini') }
 
-    models = JSON.parse(conn.body)['models'] || []
-    # 特定のアカウントで 2.0-flash-lite が制限されている場合があるためのモデル優先順位
-    target = models.find { |m| m['name'].include?('gemini-flash-latest') } ||
-             models.find { |m| m['name'].include?('gemini-1.5-flash') } ||
-             models.find { |m| m['name'].include?('gemini-flash-lite-latest') } ||
-             models.find { |m| m['name'] == 'models/gemini-2.0-flash-lite' } ||
-             models.find { |m| m['name'].include?('flash') } ||
-             models.find { |m| m['name'].include?('gemini') }
-
-    target ? target['name'] : nil
-  rescue
-    # API接続エラー時などは安全にnilを返し、呼び出し元でハンドリングする
-    nil
+        target ? target['name'] : 'models/gemini-1.5-flash'
+      else
+        Rails.logger.error "Gemini API Models Error: #{conn.status} - #{conn.body}"
+        'models/gemini-1.5-flash' # フォールバック
+      end
+    end
+  rescue => e
+    Rails.logger.error "QuizGeneratorService find_model Exception: #{e.message}"
+    'models/gemini-1.5-flash' # 安全なデフォルト
   end
 
   def request_body

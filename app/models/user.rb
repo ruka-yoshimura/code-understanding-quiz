@@ -26,11 +26,22 @@ class User < ApplicationRecord
   def answer_quiz(quiz, is_correct)
     # 過去に回答したことがあるか確認（ボーナス判定用）
     has_answered_before = quiz_answers.exists?(quiz: quiz)
+    old_level = self.level
 
     # 回答履歴を保存
     quiz_answers.create!(quiz: quiz, correct: is_correct)
 
-    result = { xp_gained: 0, bonus_applied: false, combo_bonus: false, penalty_applied: false }
+    result = {
+      xp_gained: 0,
+      bonus_applied: false,
+      combo_bonus: false,
+      penalty_applied: false,
+      level_up: false,
+      old_level: old_level,
+      new_level: old_level,
+      streak_multiplier: 1.0,
+      daily_streak: self.daily_streak
+    }
 
     if is_correct
       # 正解の場合
@@ -54,7 +65,6 @@ class User < ApplicationRecord
       end
 
       # ストリークボーナス倍率の適用
-      # 2日目から発動: 2日=1.1倍, 3日=1.2倍 ... 最大1.5倍
       multiplier = streak_multiplier
       if multiplier > 1.0
         total_xp = (total_xp * multiplier).round
@@ -65,10 +75,12 @@ class User < ApplicationRecord
       update_streak!
 
       result[:xp_gained] = total_xp
+      result[:new_level] = self.level
+      result[:level_up] = true if self.level > old_level
+      result[:daily_streak] = self.daily_streak
     else
       # 不正解の場合
       self.current_streak = 0 # 正解ストリークはリセット (コンボ終了)
-      # incorrect_streakがnilの場合に備えて0をセットする
       self.incorrect_streak = (self.incorrect_streak || 0) + 1
 
       if self.incorrect_streak >= PENALTY_THRESHOLD
@@ -116,9 +128,14 @@ class User < ApplicationRecord
     save!
   end
 
-  # 次のレベルに必要な経験値を計算 (現在のレベル * 50)
+  # 次のレベルまでの必要経験値を計算
   def required_xp_for_next_level
     level * 50
+  end
+
+  # 現在のレベルでの進捗率（パーセント）を計算
+  def xp_progress_percentage
+    [(xp.to_f / required_xp_for_next_level * 100).round, 100].min
   end
 
   # 回答時に継続日数を更新する

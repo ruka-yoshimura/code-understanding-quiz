@@ -1,3 +1,10 @@
+<%# クイズ回答用のCSS調整 %>
+<style>
+  .options-list .button_to {
+    width: 100%;
+  }
+</style>
+
 <div class="auth-container">
   <div class="quiz-card">
     <h1>クイズに挑戦</h1>
@@ -11,60 +18,31 @@
       <pre><code><%= @quiz.original_code %></code></pre>
     </div>
 
-    <div class="options">
+    <div class="options" data-controller="quiz">
       <h2>選択肢</h2>
       <div class="options-list">
         <% [@quiz.answer, @quiz.option_1, @quiz.option_2].shuffle.each do |option| %>
-        <button class="option-button" onclick="checkAnswer(this, '<%= option == @quiz.answer %>')">
-          <%= option %>
-        </button>
+        <%= button_to answer_quiz_path(@quiz, is_correct: option == @quiz.answer),
+                      method: :post,
+                      data: {
+                        turbo_stream: true,
+                        quiz_target: "option",
+                        action: "click->quiz#submit",
+                        is_correct: option == @quiz.answer
+                      },
+                      class: "option-button" do %>
+        <%= option %>
+        <% end %>
         <% end %>
       </div>
-    </div>
 
-    <div id="explanation" class="explanation-card">
-      <h3>解説</h3>
-      <p><%= @quiz.explanation %></p>
-      <div class="auth-links">
-        <%= link_to "ホームに戻る", root_path, class: "button secondary" %>
+      <div id="explanation" class="explanation-card" data-quiz-target="explanation">
+        <h3>解説</h3>
+        <p><%= @quiz.explanation %></p>
+        <div class="auth-links">
+          <%= link_to "ホームに戻る", root_path, class: "button secondary" %>
+        </div>
       </div>
     </div>
   </div>
 </div>
-
-<script>
-  async function checkAnswer(btn, isCorrect) {
-    // 全てのボタンを無効化
-    document.querySelectorAll('.option-button').forEach(b => b.disabled = true);
-
-    const isCorrectBool = isCorrect === 'true';
-
-    // サーバーに回答を送信
-    try {
-      await fetch(`/quizzes/<%= @quiz.id %>/answer`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({
-          is_correct: isCorrectBool
-        })
-      });
-    } catch (error) {
-      console.error('Error submitting answer:', error);
-    }
-
-    if (isCorrectBool) {
-      btn.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
-      btn.style.borderColor = '#10b981';
-      btn.style.color = '#10b981';
-    } else {
-      btn.style.backgroundColor = 'rgba(244, 63, 94, 0.2)';
-      btn.style.borderColor = '#f43f5e';
-      btn.style.color = '#f43f5e';
-    }
-
-    document.getElementById('explanation').style.display = 'block';
-  }
-</script>

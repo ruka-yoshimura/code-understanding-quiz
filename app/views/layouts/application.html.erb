@@ -9,17 +9,25 @@
 
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= javascript_importmap_tags %>
+  <%# 通知用のSweetAlert2 %>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <header class="main-header">
   <nav>
     <%= link_to "Code Understanding Quiz", root_path, class: "logo" %>
     <div class="nav-links">
-      <%= link_to "ホーム", root_path %>
       <% if user_signed_in? %>
+      <div class="header-stats">
+        <span class="user-title-badge" id="user-title"><%= user_title(current_user) %></span>
+        <span class="stat-item">Lv.<span id="user-level"><%= current_user.level %></span></span>
+        <span class="stat-item"><span id="user-xp"><%= current_user.xp %></span> XP</span>
+      </div>
+      <%= link_to "ホーム", root_path %>
       <%= link_to "新規投稿", new_post_path %>
       <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-button" %>
       <% else %>
+      <%= link_to "ホーム", root_path %>
       <%= link_to "ログイン", new_user_session_path %>
       <%= link_to "新規登録", new_user_registration_path %>
       <% end %>
@@ -35,5 +43,7 @@
   <% end %>
   <%= yield %>
 </main>
+
+<div id="notifications" data-controller="notification"></div>
 
 </html>

@@ -1,0 +1,106 @@
+<%# ステータスの更新 (ヘッダーとダッシュボードの両方を対象にする) %>
+<% if user_signed_in? %>
+  <%# 称号の更新 %>
+  <% new_title = user_title(current_user) %>
+  <%= turbo_stream.update "user-title", new_title %>
+  <%= turbo_stream.update "dashboard-user-title", new_title %>
+
+  <%# レベルとXPの更新 %>
+  <%= turbo_stream.update "user-level", current_user.level %>
+  <%= turbo_stream.update "dashboard-user-level", current_user.level %>
+
+  <%= turbo_stream.update "user-xp", current_user.xp %>
+  <%= turbo_stream.update "dashboard-user-xp", current_user.xp %>
+
+  <%# プログレスバーの更新 %>
+  <% xp_progress = current_user.xp_progress_percentage %>
+  <%= turbo_stream.update "dashboard-user-xp-percentage-text", "#{xp_progress}%" %>
+  <%= turbo_stream.replace "dashboard-user-xp-progress-fill" do %>
+    <div class="xp-progress-fill" id="dashboard-user-xp-progress-fill" style="width: <%= xp_progress %>%"></div>
+  <% end %>
+
+  <%# ストリークの更新 %>
+  <%= turbo_stream.update "dashboard-user-daily-streak", current_user.daily_streak %>
+  <% if current_user.daily_streak > 0 %>
+    <%# ダッシュボードのカードにクラスを追加するための処理 %>
+    <%= turbo_stream.replace "user-streak-container" do %>
+      <div class="stat-card streak-highlight" id="user-streak-container">
+        <div class="stat-label">連続回答</div>
+        <div class="stat-value">🔥 <span id="dashboard-user-daily-streak"><%= current_user.daily_streak %></span> 日</div>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%# 通知のトリガー %>
+<% if params[:is_correct] == "true" %>
+  <%# XP獲得トースト %>
+  <%= turbo_stream.append "notifications" do %>
+    <div data-controller="notification"
+         data-notification-type-value="toast"
+         data-notification-title-value="<%= @result[:xp_gained] %> XP獲得！"
+         data-notification-icon-value="success">
+    </div>
+  <% end %>
+
+  <%# ボーナス通知 %>
+  <% if @result[:bonus_applied] %>
+    <%= turbo_stream.append "notifications" do %>
+      <div data-controller="notification"
+           data-notification-type-value="toast"
+           data-notification-title-value="初回正解ボーナス！ (+5 XP)"
+           data-notification-icon-value="info">
+      </div>
+    <% end %>
+  <% end %>
+
+  <% if @result[:combo_bonus] %>
+    <%= turbo_stream.append "notifications" do %>
+      <div data-controller="notification"
+           data-notification-type-value="toast"
+           data-notification-title-value="3連続正解！コンボボーナス！ (+20 XP)"
+           data-notification-icon-value="warning">
+      </div>
+    <% end %>
+  <% end %>
+
+  <% if @result[:streak_multiplier].to_f > 1.0 %>
+    <%= turbo_stream.append "notifications" do %>
+      <div data-controller="notification"
+           data-notification-type-value="toast"
+           data-notification-title-value="連続ログインボーナス適用中！ (<%= @result[:streak_multiplier] %>倍)"
+           data-notification-icon-value="info">
+      </div>
+    <% end %>
+  <% end %>
+
+  <%# レベルアップ演出 %>
+  <% if @result[:level_up] %>
+    <%= turbo_stream.append "notifications" do %>
+      <div data-controller="notification"
+           data-notification-type-value="levelUp"
+           data-notification-level-value="<%= @result[:new_level] %>"
+           data-notification-title-value="<%= user_title(current_user) %>">
+      </div>
+    <% end %>
+  <% end %>
+<% else %>
+  <%# 不正解トースト %>
+  <%= turbo_stream.append "notifications" do %>
+    <div data-controller="notification"
+         data-notification-type-value="toast"
+         data-notification-title-value="残念！不正解です"
+         data-notification-icon-value="error">
+    </div>
+  <% end %>
+
+  <% if @result[:penalty_applied] %>
+    <%= turbo_stream.append "notifications" do %>
+      <div data-controller="notification"
+           data-notification-type-value="toast"
+           data-notification-title-value="3連続不正解ペナルティ (-10 XP)"
+           data-notification-icon-value="warning">
+      </div>
+    <% end %>
+  <% end %>
+<% end %>
