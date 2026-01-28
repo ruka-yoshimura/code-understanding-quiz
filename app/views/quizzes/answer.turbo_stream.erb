@@ -34,11 +34,11 @@
 
 <%# 通知のトリガー %>
 <% if params[:is_correct] == "true" %>
-  <%# XP獲得トースト %>
+  <%# XP獲得ポップアップ（正解時） %>
   <%= turbo_stream.append "notifications" do %>
     <div data-controller="notification"
-         data-notification-type-value="toast"
-         data-notification-title-value="<%= @result[:xp_gained] %> XP獲得！"
+         data-notification-type-value="popup"
+         data-notification-title-value="正解！ <%= @result[:xp_gained] %> XP獲得！"
          data-notification-icon-value="success">
     </div>
   <% end %>
@@ -85,10 +85,10 @@
     <% end %>
   <% end %>
 <% else %>
-  <%# 不正解トースト %>
+  <%# 不正解ポップアップ %>
   <%= turbo_stream.append "notifications" do %>
     <div data-controller="notification"
-         data-notification-type-value="toast"
+         data-notification-type-value="popup"
          data-notification-title-value="残念！不正解です"
          data-notification-icon-value="error">
     </div>

@@ -19,7 +19,28 @@ export default class extends Controller {
       this.toast();
     } else if (this.typeValue === "levelUp") {
       this.levelUp();
+    } else if (this.typeValue === "popup") {
+      this.popup();
     }
+  }
+
+  // 中心に出るポップアップ（正解・不正解用）
+  popup() {
+    const title = this.titleValue;
+    const icon = this.iconValue || "success";
+    const timer = this.timerValue;
+
+    Swal.fire({
+      title: title,
+      icon: icon,
+      timer: 1500,
+      showConfirmButton: false,
+      backdrop: `
+        rgba(0,0,123,0.4)
+        left top
+        no-repeat
+      `,
+    });
   }
 
   // レベルアップ演出
