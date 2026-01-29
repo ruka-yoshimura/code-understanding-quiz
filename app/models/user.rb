@@ -83,7 +83,7 @@ class User < ApplicationRecord
     else
       # 不正解の場合
       self.current_streak = 0 # 正解ストリークはリセット (コンボ終了)
-      self.incorrect_streak = (incorrect_streak || 0) + 1
+      self.incorrect_streak += 1
 
       if incorrect_streak >= PENALTY_THRESHOLD
         lose_xp(PENALTY_AMOUNT)

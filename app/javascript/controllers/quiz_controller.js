@@ -3,9 +3,7 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   static targets = ["option", "explanation"];
 
-  connect() {
-    console.log("Quiz controller connected");
-  }
+  connect() {}
 
   submit(event) {
     // ボタンの多重クリック防止

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_01_22_044724) do
+ActiveRecord::Schema[7.1].define(version: 2026_01_29_122610) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -59,7 +59,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_22_044724) do
     t.integer "daily_streak", default: 0
     t.date "last_answered_date"
     t.integer "current_streak", default: 0
-    t.integer "incorrect_streak"
+    t.integer "incorrect_streak", default: 0, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

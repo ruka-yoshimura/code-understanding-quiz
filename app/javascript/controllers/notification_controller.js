@@ -11,11 +11,6 @@ export default class extends Controller {
   };
 
   connect() {
-    console.log(
-      "NotificationController connected",
-      this.typeValue,
-      this.titleValue,
-    );
     if (this.typeValue === "toast") {
       this.toast();
     } else if (this.typeValue === "levelUp") {
