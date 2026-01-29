@@ -19,7 +19,7 @@
     <div class="nav-links">
       <% if user_signed_in? %>
       <div class="header-stats">
-        <span class="user-title-badge" id="user-title"><%= user_title(current_user) %></span>
+        <span class="user-title-badge <%= user_rank_class(current_user) %>" id="user-title"><%= user_title(current_user) %></span>
         <span class="stat-item">Lv.<span id="user-level"><%= current_user.level %></span></span>
         <span class="stat-item"><span id="user-xp"><%= current_user.xp %></span> XP</span>
       </div>

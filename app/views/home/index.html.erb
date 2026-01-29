@@ -4,8 +4,10 @@
     <div class="user-info">
       <h2>
         こんにちは、<%= current_user.email.split('@').first %> さん
-        <span class="user-title" id="dashboard-user-title"><%= user_title(current_user) %></span>
       </h2>
+      <div class="user-title-display">
+        <span class="rank-badge <%= user_rank_class(current_user) %>" id="dashboard-user-title"><%= user_title(current_user) %></span>
+      </div>
       <p>あなたのコード理解を深め、レベルアップを目指しましょう！</p>
     </div>
     <div class="stats-row">
@@ -26,6 +28,14 @@
     <div class="stat-card" id="user-streak-container">
       <div class="stat-label">連続回答</div>
       <div class="stat-value">🔥 <span id="dashboard-user-daily-streak"><%= current_user.daily_streak %></span> 日</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">生成したクイズ</div>
+      <div class="stat-value"><%= current_user.posts.joins(:quizzes).count %> 問</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">投稿したコード</div>
+      <div class="stat-value"><%= current_user.posts.count %> 件</div>
     </div>
   </div>
 

@@ -99,12 +99,16 @@ body {
 
 .user-title-badge {
   font-size: 0.75rem;
-  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
   color: #0f172a;
   padding: 2px 10px;
   border-radius: 10px;
   font-weight: 700;
   white-space: nowrap;
+  box-shadow:
+    0 2px 4px -1px rgba(251, 191, 36, 0.3),
+    0 0 10px rgba(251, 191, 36, 0.3);
+  border: 1px solid rgba(251, 191, 36, 0.5);
 }
 
 /* Links */
@@ -488,6 +492,143 @@ a:hover {
   margin: 5px 0 0;
   color: #94a3b8;
   font-size: 0.875rem;
+}
+
+.user-title-display {
+  margin: 15px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.rank-badge {
+  display: inline-block;
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  color: #0f172a;
+  padding: 12px 32px;
+  border-radius: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  box-shadow:
+    0 4px 6px -1px rgba(251, 191, 36, 0.3),
+    0 2px 4px -1px rgba(251, 191, 36, 0.2),
+    0 0 20px rgba(251, 191, 36, 0.4);
+  border: 2px solid rgba(251, 191, 36, 0.5);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 4px 6px -1px rgba(251, 191, 36, 0.3),
+      0 2px 4px -1px rgba(251, 191, 36, 0.2),
+      0 0 20px rgba(251, 191, 36, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 4px 6px -1px rgba(251, 191, 36, 0.5),
+      0 2px 4px -1px rgba(251, 191, 36, 0.3),
+      0 0 30px rgba(251, 191, 36, 0.6);
+  }
+}
+
+/* Rank-specific color themes */
+.rank-beginner {
+  background: linear-gradient(
+    135deg,
+    #94a3b8 0%,
+    #64748b 50%,
+    #475569 100%
+  ) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(148, 163, 184, 0.3),
+    0 2px 4px -1px rgba(148, 163, 184, 0.2),
+    0 0 20px rgba(148, 163, 184, 0.4) !important;
+  border: 2px solid rgba(148, 163, 184, 0.5) !important;
+}
+
+.rank-apprentice {
+  background: linear-gradient(
+    135deg,
+    #34d399 0%,
+    #10b981 50%,
+    #059669 100%
+  ) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(16, 185, 129, 0.3),
+    0 2px 4px -1px rgba(16, 185, 129, 0.2),
+    0 0 20px rgba(16, 185, 129, 0.4) !important;
+  border: 2px solid rgba(16, 185, 129, 0.5) !important;
+}
+
+.rank-explorer {
+  background: linear-gradient(
+    135deg,
+    #60a5fa 0%,
+    #3b82f6 50%,
+    #2563eb 100%
+  ) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(59, 130, 246, 0.3),
+    0 2px 4px -1px rgba(59, 130, 246, 0.2),
+    0 0 20px rgba(59, 130, 246, 0.4) !important;
+  border: 2px solid rgba(59, 130, 246, 0.5) !important;
+}
+
+.rank-specialist {
+  background: linear-gradient(
+    135deg,
+    #c084fc 0%,
+    #a855f7 50%,
+    #9333ea 100%
+  ) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(168, 85, 247, 0.3),
+    0 2px 4px -1px rgba(168, 85, 247, 0.2),
+    0 0 20px rgba(168, 85, 247, 0.4) !important;
+  border: 2px solid rgba(168, 85, 247, 0.5) !important;
+}
+
+.rank-master {
+  background: linear-gradient(
+    135deg,
+    #f87171 0%,
+    #ef4444 50%,
+    #dc2626 100%
+  ) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(239, 68, 68, 0.3),
+    0 2px 4px -1px rgba(239, 68, 68, 0.2),
+    0 0 20px rgba(239, 68, 68, 0.4) !important;
+  border: 2px solid rgba(239, 68, 68, 0.5) !important;
+}
+
+.rank-legend {
+  background: linear-gradient(
+    135deg,
+    #fbbf24 0%,
+    #f59e0b 50%,
+    #d97706 100%
+  ) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(251, 191, 36, 0.3),
+    0 2px 4px -1px rgba(251, 191, 36, 0.2),
+    0 0 20px rgba(251, 191, 36, 0.4) !important;
+  border: 2px solid rgba(251, 191, 36, 0.5) !important;
+}
+
+/* Update header badge to use smaller shadows */
+.user-title-badge.rank-beginner,
+.user-title-badge.rank-apprentice,
+.user-title-badge.rank-explorer,
+.user-title-badge.rank-specialist,
+.user-title-badge.rank-master,
+.user-title-badge.rank-legend {
+  box-shadow:
+    0 2px 4px -1px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(0, 0, 0, 0.3) !important;
 }
 
 .stats-grid {
