@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     end
   end
   root 'home#index'
+  resources :reviews, only: [:index]
   resources :posts, except: [:index]
   devise_for :users, controllers: {
     sessions: 'users/sessions'

@@ -1,51 +1,60 @@
 <% if user_signed_in? %>
 <section class="profile-dashboard">
-  <div class="dashboard-header">
-    <div class="user-info">
-      <h2>
-        こんにちは、<%= current_user.email.split('@').first %> さん
-      </h2>
-      <div class="user-title-display">
-        <span class="rank-badge <%= user_rank_class(current_user) %>" id="dashboard-user-title"><%= user_title(current_user) %></span>
+  <div class="dashboard-layout">
+    <div class="dashboard-main">
+      <div class="dashboard-header">
+        <div class="user-info">
+          <h2>こんにちは、<%= current_user.email.split('@').first %> さん</h2>
+          <div class="user-title-display" style="justify-content: flex-start;">
+            <span class="rank-badge <%= user_rank_class(current_user) %>" id="dashboard-user-title"><%= user_title(current_user) %></span>
+          </div>
+          <p>あなたのコード理解を深め、レベルアップを目指しましょう！</p>
+        </div>
       </div>
-      <p>あなたのコード理解を深め、レベルアップを目指しましょう！</p>
-    </div>
-    <div class="stats-row">
-      <span class="user-name"><%= current_user.email %></span>
-      <span class="user-level" id="dashboard-user-level"><%= current_user.level %></span>
-    </div>
-  </div>
 
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-label">現在のレベル</div>
-      <div class="stat-value"><%= current_user.level %></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">現在のXP</div>
-      <div class="stat-value" id="dashboard-user-xp"><%= current_user.xp %></div>
-    </div>
-    <div class="stat-card" id="user-streak-container">
-      <div class="stat-label">連続回答</div>
-      <div class="stat-value">🔥 <span id="dashboard-user-daily-streak"><%= current_user.daily_streak %></span> 日</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">生成したクイズ</div>
-      <div class="stat-value"><%= current_user.posts.joins(:quizzes).count %> 問</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">投稿したコード</div>
-      <div class="stat-value"><%= current_user.posts.count %> 件</div>
-    </div>
-  </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">現在のレベル</div>
+          <div class="stat-value"><%= current_user.level %></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">現在のXP</div>
+          <div class="stat-value" id="dashboard-user-xp"><%= current_user.xp %></div>
+        </div>
+        <div class="stat-card" id="user-streak-container">
+          <div class="stat-label">連続回答</div>
+          <div class="stat-value">🔥 <span id="dashboard-user-daily-streak"><%= current_user.daily_streak %></span> 日</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">生成したクイズ</div>
+          <div class="stat-value"><%= current_user.posts.joins(:quizzes).count %> 問</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">投稿したコード</div>
+          <div class="stat-value"><%= current_user.posts.count %> 件</div>
+        </div>
+      </div>
 
-  <div class="xp-section" id="user-xp-section">
-    <div class="xp-label-row">
-      <span>次のレベルまで</span>
-      <span id="dashboard-user-xp-percentage-text"><%= current_user.xp %> / <%= current_user.required_xp_for_next_level %> XP</span>
+      <div class="xp-section" id="user-xp-section">
+        <div class="xp-label-row">
+          <span>次のレベルまで</span>
+          <span id="dashboard-user-xp-percentage-text"><%= current_user.xp %> / <%= current_user.required_xp_for_next_level %> XP</span>
+        </div>
+        <div class="xp-progress-bar">
+          <div class="xp-progress-fill" id="dashboard-user-xp-progress-fill" style="width: <%= current_user.xp_progress_percentage %>%"></div>
+        </div>
+      </div>
     </div>
-    <div class="xp-progress-bar">
-      <div class="xp-progress-fill" id="dashboard-user-xp-progress-fill" style="width: <%= current_user.xp_progress_percentage %>%"></div>
+
+    <%# 側面の特別アクションエリア %>
+    <div class="dashboard-sidebar">
+      <%= link_to reviews_path, class: "review-action-card" do %>
+      <div class="icon">🎯</div>
+      <h3>苦手克服</h3>
+      <div class="count"><%= current_user.weak_quizzes.count %></div>
+      <div class="label">未正解の問題があります</div>
+      <div class="button primary" style="margin-top: 15px; width: fit-content; padding: 10px 30px;">挑戦する</div>
+      <% end %>
     </div>
   </div>
 </section>

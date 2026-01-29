@@ -138,6 +138,17 @@ class User < ApplicationRecord
     [(xp.to_f / required_xp_for_next_level * 100).round, 100].min
   end
 
+  # ユーザーが間違えたことのあるクイズを取得
+  #（一度も正解していない、または最新の回答が不正解のもの）
+  def weak_quizzes
+    quiz_ids = quiz_answers.where(correct: false).pluck(:quiz_id).uniq
+    correct_quiz_ids = quiz_answers.where(correct: true).pluck(:quiz_id).uniq
+
+    # まだ正解していない、間違えたことのあるクイズID
+    review_ids = quiz_ids - correct_quiz_ids
+    Quiz.where(id: review_ids).order(created_at: :desc)
+  end
+
   # 回答時に継続日数を更新する
   def update_streak!
     today = Time.current.to_date
