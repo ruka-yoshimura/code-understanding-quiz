@@ -30,6 +30,7 @@ RSpec.describe User, type: :model do
 
   describe 'メソッドの検証' do
     it 'ゲストユーザーが作成できること' do
+      described_class.where(email: 'guest@example.com').destroy_all
       expect { described_class.guest }.to change(described_class, :count).by(1)
       guest = described_class.last
       expect(guest.email).to eq 'guest@example.com'
