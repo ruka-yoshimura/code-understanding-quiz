@@ -60,7 +60,7 @@
   <div class="post-card">
     <h2 style="margin-top:0;"><%= link_to post.title, post %></h2>
     <p style="font-size: 0.875rem; color: #94a3b8;">
-      作成日: <%= post.created_at.strftime("%Y/%m/%d") %>
+      作成日: <%= post.created_at.strftime("%Y/%m/%d") %> | 生成クイズ: <%= post.quizzes.count %> 問
     </p>
     <p><%= truncate(post.content, length: 150) %></p>
     <%= link_to "クイズに挑戦する →", post, class: "button secondary", style: "margin-top: 10px; font-size: 0.875rem;" %>
