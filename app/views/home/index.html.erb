@@ -32,7 +32,7 @@
   <div class="xp-section" id="user-xp-section">
     <div class="xp-label-row">
       <span>次のレベルまで</span>
-      <span id="dashboard-user-xp-percentage-text"><%= current_user.xp_progress_percentage %>%</span>
+      <span id="dashboard-user-xp-percentage-text"><%= current_user.xp %> / <%= current_user.required_xp_for_next_level %> XP</span>
     </div>
     <div class="xp-progress-bar">
       <div class="xp-progress-fill" id="dashboard-user-xp-progress-fill" style="width: <%= current_user.xp_progress_percentage %>%"></div>
