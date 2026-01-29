@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe QuizGeneratorService do
@@ -27,7 +29,7 @@ RSpec.describe QuizGeneratorService do
 
   describe '#prompt' do
     it '難易度調整指示がプロンプト全体に含まれていること' do
-      s = QuizGeneratorService.new(code, [], 10)
+      s = described_class.new(code, [], 10)
       expect(s.send(:prompt)).to include('# 難易度調整指示:')
       expect(s.send(:prompt)).to include('初級者向け')
     end

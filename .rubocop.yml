@@ -1,0 +1,62 @@
+plugins:
+  - rubocop-rails
+  - rubocop-performance
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - "bin/**/*"
+    - "db/schema.rb"
+    - "db/migrate/**/*"
+    - "vendor/**/*"
+    - "config/environments/*"
+    - "node_modules/**/*"
+
+# 日本語コメントを許可
+Style/AsciiComments:
+  Enabled: false
+
+# ドキュメント（クラス冒頭のコメント）は必須にしない
+Style/Documentation:
+  Enabled: false
+
+# 文字列のクォートは一貫していればOK（Railsデフォルトはダブルかシングルか厳格すぎる場合があるため）
+# ただし、厳格にダブルに寄せたい場合はここを弄らない
+# Style/StringLiterals:
+#   EnforcedStyle: double_quotes
+
+# メソッドの長さ制限を少し緩和（デフォルト10行は初心者には厳しすぎるため）
+Metrics/MethodLength:
+  Max: 20
+
+# クラスの長さ制限を少し緩和
+Metrics/ClassLength:
+  Max: 150
+
+# ブロックの長さ制限
+Metrics/BlockLength:
+  Exclude:
+    - "config/routes.rb"
+    - "spec/**/*"
+
+# 言語設定（i18n）を推奨するが、ポートフォリオでは必須にしない
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+# RSpec関連の細かいルールを緩和（日本語テスト名や複数の検証を許可）
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 5
+
+RSpec/ContextWording:
+  Enabled: false
+
+# クイズの選択肢などで option_1, option_2 を使うため
+Naming/VariableNumber:
+  Enabled: false

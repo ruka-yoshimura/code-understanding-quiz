@@ -1,19 +1,21 @@
+# frozen_string_literal: true
+
 module UserHelper
   def user_title(user)
     level = user.level
     case level
     when 1..9
-      "ビギナー"
+      'ビギナー'
     when 10..19
-      "見習いエンジニア"
+      '見習いエンジニア'
     when 20..29
-      "コードの探究者"
+      'コードの探究者'
     when 30..39
-      "コードスペシャリスト"
+      'コードスペシャリスト'
     when 40..49
-      "コードマスター"
+      'コードマスター'
     else # 50以上
-      "レジェンド"
+      'レジェンド'
     end
   end
 
@@ -21,17 +23,17 @@ module UserHelper
     level = user.level
     case level
     when 1..9
-      "text-gray-500"
+      'text-gray-500'
     when 10..19
-      "text-green-500"
+      'text-green-500'
     when 20..29
-      "text-blue-500"
+      'text-blue-500'
     when 30..39
-      "text-purple-500"
+      'text-purple-500'
     when 40..49
-      "text-red-500"
+      'text-red-500'
     else
-      "text-yellow-500"
+      'text-yellow-500'
     end
   end
 
@@ -39,17 +41,17 @@ module UserHelper
     level = user.level
     case level
     when 1..9
-      "rank-beginner"
+      'rank-beginner'
     when 10..19
-      "rank-apprentice"
+      'rank-apprentice'
     when 20..29
-      "rank-explorer"
+      'rank-explorer'
     when 30..39
-      "rank-specialist"
+      'rank-specialist'
     when 40..49
-      "rank-master"
+      'rank-master'
     else
-      "rank-legend"
+      'rank-legend'
     end
   end
 end

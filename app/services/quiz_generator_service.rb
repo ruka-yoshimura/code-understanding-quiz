@@ -1,15 +1,18 @@
+# frozen_string_literal: true
+
 require 'faraday'
 require 'json'
 
 class QuizGeneratorService
   attr_reader :error_type
-  BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
+
+  BASE_URL = 'https://generativelanguage.googleapis.com/v1beta'
 
   def initialize(code_snippet, existing_questions = [], level = 1)
     @code_snippet = code_snippet
     @existing_questions = existing_questions
     @level = level
-    @api_key = ENV['GEMINI_API_KEY']
+    @api_key = ENV.fetch('GEMINI_API_KEY', nil)
     @error_type = nil
   end
 
@@ -46,8 +49,8 @@ class QuizGeneratorService
   private
 
   def find_model
-    Rails.cache.fetch("gemini_model_name", expires_in: 24.hours) do
-      Rails.logger.info "QuizGeneratorService: Fetching models from Gemini API"
+    Rails.cache.fetch('gemini_model_name', expires_in: 24.hours) do
+      Rails.logger.info 'QuizGeneratorService: Fetching models from Gemini API'
       conn = Faraday.get("#{BASE_URL}/models?key=#{@api_key}")
       if conn.status == 200
         models = JSON.parse(conn.body)['models'] || []
@@ -64,7 +67,7 @@ class QuizGeneratorService
         'models/gemini-1.5-flash' # フォールバック
       end
     end
-  rescue => e
+  rescue StandardError => e
     Rails.logger.error "QuizGeneratorService find_model Exception: #{e.message}"
     'models/gemini-1.5-flash' # 安全なデフォルト
   end
@@ -72,7 +75,7 @@ class QuizGeneratorService
   def request_body
     {
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { responseMimeType: "application/json" }
+      generationConfig: { responseMimeType: 'application/json' }
     }
   end
 
@@ -117,10 +120,10 @@ class QuizGeneratorService
   end
 
   def avoid_questions_text
-    return "" if @existing_questions.empty?
+    return '' if @existing_questions.empty?
 
     "重要：以下の問題とは異なる、新しい視点のクイズを作成してください：\n" +
-    @existing_questions.map { |q| "- #{q}" }.join("\n")
+      @existing_questions.map { |q| "- #{q}" }.join("\n")
   end
 
   def parse_response(body)

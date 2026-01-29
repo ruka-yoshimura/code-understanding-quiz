@@ -1,5 +1,11 @@
+# frozen_string_literal: true
+
 class QuizzesController < ApplicationController
   before_action :authenticate_user!
+
+  def show
+    @quiz = Quiz.find(params[:id])
+  end
 
   def create
     post = Post.find(params[:post_id])
@@ -31,16 +37,14 @@ class QuizzesController < ApplicationController
     end
   end
 
-  def show
-    @quiz = Quiz.find(params[:id])
-  end
-
   # クイズの回答を処理する
   def answer
     @quiz = Quiz.find(params[:id])
-    Rails.logger.debug "DEBUG: answer action called. Params is_correct: #{params[:is_correct].inspect} (Class: #{params[:is_correct].class})"
+    Rails.logger.debug do
+      "DEBUG: answer action called. Params is_correct: #{params[:is_correct].inspect} (Class: #{params[:is_correct].class})"
+    end
     is_correct = params[:is_correct] == 'true'
-    Rails.logger.debug "DEBUG: Calculated is_correct boolean: #{is_correct}"
+    Rails.logger.debug { "DEBUG: Calculated is_correct boolean: #{is_correct}" }
 
     # Userモデルのメソッドで回答処理（履歴保存、XP付与、ストリーク更新）を実行
     @result = current_user.answer_quiz(@quiz, is_correct)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe PostsController, type: :controller do
@@ -41,9 +43,9 @@ RSpec.describe PostsController, type: :controller do
         end
 
         it '投稿が作成されること' do
-          expect {
+          expect do
             post :create, params: valid_params
-          }.to change(Post, :count).by(1)
+          end.to change(Post, :count).by(1)
         end
 
         it '作成された投稿にリダイレクトされること' do
@@ -64,9 +66,9 @@ RSpec.describe PostsController, type: :controller do
         end
 
         it '投稿が作成されないこと' do
-          expect {
+          expect do
             post :create, params: invalid_params
-          }.not_to change(Post, :count)
+          end.not_to change(Post, :count)
         end
 
         it 'newテンプレートが再表示されること' do

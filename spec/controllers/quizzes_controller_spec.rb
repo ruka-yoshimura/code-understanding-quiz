@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe QuizzesController, type: :controller do
@@ -32,9 +34,9 @@ RSpec.describe QuizzesController, type: :controller do
       end
 
       it 'クイズが作成され、クイズページにリダイレクトされること' do
-        expect {
+        expect do
           post :create, params: { post_id: post_record.id }
-        }.to change(Quiz, :count).by(1)
+        end.to change(Quiz, :count).by(1)
 
         expect(response).to redirect_to(Quiz.last)
         expect(flash[:notice]).to eq('クイズを作成しました！')
@@ -56,8 +58,7 @@ RSpec.describe QuizzesController, type: :controller do
       before do
         service = instance_double(QuizGeneratorService)
         allow(QuizGeneratorService).to receive(:new).and_return(service)
-        allow(service).to receive(:call).and_return(nil)
-        allow(service).to receive(:error_type).and_return(:rate_limit)
+        allow(service).to receive_messages(call: nil, error_type: :rate_limit)
       end
 
       it '適切なエラーメッセージが表示されること' do
@@ -72,8 +73,7 @@ RSpec.describe QuizzesController, type: :controller do
       before do
         service = instance_double(QuizGeneratorService)
         allow(QuizGeneratorService).to receive(:new).and_return(service)
-        allow(service).to receive(:call).and_return(nil)
-        allow(service).to receive(:error_type).and_return(nil)
+        allow(service).to receive_messages(call: nil, error_type: nil)
       end
 
       it '一般的なエラーメッセージが表示されること' do
@@ -88,24 +88,24 @@ RSpec.describe QuizzesController, type: :controller do
   describe 'POST #answer' do
     context '正解の場合' do
       it 'XPが付与されること' do
-        expect {
+        expect do
           post :answer, params: { id: quiz.id, is_correct: 'true' }, format: :json
-        }.to change { user.reload.xp }.by_at_least(10)
+        end.to change { user.reload.xp }.by_at_least(10)
       end
 
       it '正しいJSONレスポンスが返ること' do
         post :answer, params: { id: quiz.id, is_correct: 'true' }, format: :json
 
-        json_response = JSON.parse(response.body)
+        json_response = response.parsed_body
         expect(json_response['status']).to eq('ok')
         expect(json_response['xp_gained']).to be > 0
         expect(response).to have_http_status(:success)
       end
 
       it 'QuizAnswerレコードが作成されること' do
-        expect {
+        expect do
           post :answer, params: { id: quiz.id, is_correct: 'true' }, format: :json
-        }.to change(QuizAnswer, :count).by(1)
+        end.to change(QuizAnswer, :count).by(1)
 
         expect(QuizAnswer.last.correct).to be true
       end
@@ -113,23 +113,23 @@ RSpec.describe QuizzesController, type: :controller do
 
     context '不正解の場合' do
       it 'XPが付与されないこと' do
-        expect {
+        expect do
           post :answer, params: { id: quiz.id, is_correct: 'false' }, format: :json
-        }.not_to change { user.reload.xp }
+        end.not_to(change { user.reload.xp })
       end
 
       it '正しいJSONレスポンスが返ること' do
         post :answer, params: { id: quiz.id, is_correct: 'false' }, format: :json
 
-        json_response = JSON.parse(response.body)
+        json_response = response.parsed_body
         expect(json_response['status']).to eq('ok')
         expect(json_response['xp_gained']).to eq(0)
       end
 
       it 'QuizAnswerレコードが作成されること' do
-        expect {
+        expect do
           post :answer, params: { id: quiz.id, is_correct: 'false' }, format: :json
-        }.to change(QuizAnswer, :count).by(1)
+        end.to change(QuizAnswer, :count).by(1)
 
         expect(QuizAnswer.last.correct).to be false
       end
@@ -153,7 +153,7 @@ RSpec.describe QuizzesController, type: :controller do
       it 'レベルアップが検出されること' do
         post :answer, params: { id: quiz.id, is_correct: 'true' }, format: :json
 
-        json_response = JSON.parse(response.body)
+        json_response = response.parsed_body
         expect(json_response['level_up']).to be true
         expect(json_response['new_level']).to be > json_response['old_level']
       end

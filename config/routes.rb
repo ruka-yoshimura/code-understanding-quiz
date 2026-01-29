@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
-  resources :quizzes, only: [:create, :show] do # クイズのリソースを定義
+  resources :quizzes, only: %i[create show] do # クイズのリソースを定義
     member do # 特定のクイズに対するアクション
       post :answer # 回答を投稿するアクション
     end
@@ -19,5 +21,5 @@ Rails.application.routes.draw do
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  get 'up' => 'rails/health#show', as: :rails_health_check
 end

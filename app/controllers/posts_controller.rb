@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PostsController < ApplicationController
   before_action :authenticate_user!, except: [:show]
 
@@ -14,7 +16,7 @@ class PostsController < ApplicationController
     if @post.save
       redirect_to @post, notice: 'コードを投稿しました！'
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 

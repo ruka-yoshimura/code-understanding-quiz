@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Quiz < ApplicationRecord
   # どの投稿から生成されたかを管理
   belongs_to :post

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -26,7 +28,7 @@ class User < ApplicationRecord
   def answer_quiz(quiz, is_correct)
     # 過去に回答したことがあるか確認（ボーナス判定用）
     has_answered_before = quiz_answers.exists?(quiz: quiz)
-    old_level = self.level
+    old_level = level
 
     # 回答履歴を保存
     quiz_answers.create!(quiz: quiz, correct: is_correct)
@@ -40,7 +42,7 @@ class User < ApplicationRecord
       old_level: old_level,
       new_level: old_level,
       streak_multiplier: 1.0,
-      daily_streak: self.daily_streak
+      daily_streak: daily_streak
     }
 
     if is_correct
@@ -75,15 +77,15 @@ class User < ApplicationRecord
       update_streak!
 
       result[:xp_gained] = total_xp
-      result[:new_level] = self.level
-      result[:level_up] = true if self.level > old_level
-      result[:daily_streak] = self.daily_streak
+      result[:new_level] = level
+      result[:level_up] = true if level > old_level
+      result[:daily_streak] = daily_streak
     else
       # 不正解の場合
       self.current_streak = 0 # 正解ストリークはリセット (コンボ終了)
-      self.incorrect_streak = (self.incorrect_streak || 0) + 1
+      self.incorrect_streak = (incorrect_streak || 0) + 1
 
-      if self.incorrect_streak >= PENALTY_THRESHOLD
+      if incorrect_streak >= PENALTY_THRESHOLD
         lose_xp(PENALTY_AMOUNT)
         result[:penalty_applied] = true
         self.incorrect_streak = 0 # ペナルティ適用後にリセット
@@ -114,7 +116,7 @@ class User < ApplicationRecord
 
     # レベルアップ判定（ループで複数レベルアップにも対応）
     # レベル上限(50)に達している場合はレベルアップしない
-    while self.level < MAX_LEVEL && xp >= required_xp_for_next_level
+    while level < MAX_LEVEL && xp >= required_xp_for_next_level
       self.xp -= required_xp_for_next_level
       self.level += 1
     end
@@ -139,7 +141,7 @@ class User < ApplicationRecord
   end
 
   # ユーザーが間違えたことのあるクイズを取得
-  #（一度も正解していない、または最新の回答が不正解のもの）
+  # （一度も正解していない、または最新の回答が不正解のもの）
   def weak_quizzes
     quiz_ids = quiz_answers.where(correct: false).pluck(:quiz_id).uniq
     correct_quiz_ids = quiz_answers.where(correct: true).pluck(:quiz_id).uniq

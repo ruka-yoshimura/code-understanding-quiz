@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
@@ -28,8 +30,8 @@ RSpec.describe User, type: :model do
 
   describe 'メソッドの検証' do
     it 'ゲストユーザーが作成できること' do
-      expect { User.guest }.to change(User, :count).by(1)
-      guest = User.last
+      expect { described_class.guest }.to change(described_class, :count).by(1)
+      guest = described_class.last
       expect(guest.email).to eq 'guest@example.com'
     end
 
@@ -39,11 +41,11 @@ RSpec.describe User, type: :model do
       it '昨日回答していればストリークがインクリメントされること' do
         user.update_streak!
         expect(user.daily_streak).to eq 2
-        expect(user.last_answered_date).to eq Date.today
+        expect(user.last_answered_date).to eq Time.zone.today
       end
 
       it '今日すでに回答していればストリークは維持されること' do
-        user.update(last_answered_date: Date.today)
+        user.update(last_answered_date: Time.zone.today)
         expect { user.update_streak! }.not_to change(user, :daily_streak)
       end
 
@@ -51,7 +53,7 @@ RSpec.describe User, type: :model do
         user.update(last_answered_date: 2.days.ago)
         user.update_streak!
         expect(user.daily_streak).to eq 1
-        expect(user.last_answered_date).to eq Date.today
+        expect(user.last_answered_date).to eq Time.zone.today
       end
     end
 
@@ -59,7 +61,7 @@ RSpec.describe User, type: :model do
       let(:user) { create(:user, level: 1, xp: 0) }
 
       it '経験値が正しく加算されること' do
-        expect { user.gain_xp(10) }.to change { user.xp }.by(10)
+        expect { user.gain_xp(10) }.to change(user, :xp).by(10)
       end
 
       it '必要経験値に達するとレベルアップすること' do
