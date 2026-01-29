@@ -5,6 +5,7 @@ export default class extends Controller {
     type: String,
     level: Number,
     title: String,
+    html: String,
     icon: String,
     timer: { type: Number, default: 3000 },
   };
@@ -27,11 +28,13 @@ export default class extends Controller {
   // 中心に出るポップアップ（正解・不正解用）
   popup() {
     const title = this.titleValue;
+    const html = this.htmlValue;
     const icon = this.iconValue || "success";
     const timer = this.timerValue;
 
     Swal.fire({
       title: title,
+      html: html,
       icon: icon,
       timer: 1500,
       showConfirmButton: false,

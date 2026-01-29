@@ -33,46 +33,30 @@
 <% end %>
 
 <%# 通知のトリガー %>
-<% if params[:is_correct] == "true" %>
+<% if @result[:xp_gained] > 0 %>
+  <%# メッセージ生成 %>
+  <%
+    message = "<strong>#{@result[:xp_gained]} XP獲得！</strong>"
+    bonus_details = []
+    bonus_details << "初見正解ボーナス (+5 XP)" if @result[:bonus_applied]
+    bonus_details << "コンボボーナス (+20 XP)" if @result[:combo_bonus]
+    bonus_details << "連続ログインボーナス (#{@result[:streak_multiplier]}倍)" if @result[:streak_multiplier].to_f > 1.0
+
+    if bonus_details.any?
+      message += "<br><span class='text-sm text-gray' style='font-size: 0.9em;'>" + bonus_details.join("<br>") + "</span>"
+    end
+  %>
+
   <%# XP獲得ポップアップ（正解時） %>
   <%= turbo_stream.append "notifications" do %>
     <div data-controller="notification"
          data-notification-type-value="popup"
-         data-notification-title-value="正解！ <%= @result[:xp_gained] %> XP獲得！"
+         data-notification-title-value="正解！"
+         data-notification-html-value="<%= message %>"
          data-notification-icon-value="success">
     </div>
   <% end %>
 
-  <%# ボーナス通知 %>
-  <% if @result[:bonus_applied] %>
-    <%= turbo_stream.append "notifications" do %>
-      <div data-controller="notification"
-           data-notification-type-value="toast"
-           data-notification-title-value="初回正解ボーナス！ (+5 XP)"
-           data-notification-icon-value="info">
-      </div>
-    <% end %>
-  <% end %>
-
-  <% if @result[:combo_bonus] %>
-    <%= turbo_stream.append "notifications" do %>
-      <div data-controller="notification"
-           data-notification-type-value="toast"
-           data-notification-title-value="3連続正解！コンボボーナス！ (+20 XP)"
-           data-notification-icon-value="warning">
-      </div>
-    <% end %>
-  <% end %>
-
-  <% if @result[:streak_multiplier].to_f > 1.0 %>
-    <%= turbo_stream.append "notifications" do %>
-      <div data-controller="notification"
-           data-notification-type-value="toast"
-           data-notification-title-value="連続ログインボーナス適用中！ (<%= @result[:streak_multiplier] %>倍)"
-           data-notification-icon-value="info">
-      </div>
-    <% end %>
-  <% end %>
 
   <%# レベルアップ演出 %>
   <% if @result[:level_up] %>

@@ -38,7 +38,9 @@ class QuizzesController < ApplicationController
   # クイズの回答を処理する
   def answer
     @quiz = Quiz.find(params[:id])
-    is_correct = params[:is_correct]
+    Rails.logger.debug "DEBUG: answer action called. Params is_correct: #{params[:is_correct].inspect} (Class: #{params[:is_correct].class})"
+    is_correct = params[:is_correct] == 'true'
+    Rails.logger.debug "DEBUG: Calculated is_correct boolean: #{is_correct}"
 
     # Userモデルのメソッドで回答処理（履歴保存、XP付与、ストリーク更新）を実行
     @result = current_user.answer_quiz(@quiz, is_correct)
