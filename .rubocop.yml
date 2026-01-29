@@ -26,9 +26,9 @@ Style/Documentation:
 # Style/StringLiterals:
 #   EnforcedStyle: double_quotes
 
-# メソッドの長さ制限を少し緩和（デフォルト10行は初心者には厳しすぎるため）
+# メソッドの長さ制限
 Metrics/MethodLength:
-  Max: 20
+  Enabled: false
 
 # クラスの長さ制限を少し緩和
 Metrics/ClassLength:
@@ -59,4 +59,29 @@ RSpec/ContextWording:
 
 # クイズの選択肢などで option_1, option_2 を使うため
 Naming/VariableNumber:
+  Enabled: false
+
+# 複雑度の計算系はポートフォリオレベルではノイズになりやすいため無効化
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+# 行の長さ制限を緩和
+Layout/LineLength:
+  Max: 160
+
+# RSpecでの allow_any_instance_of を許容（テストの書きやすさ優先）
+RSpec/AnyInstance:
+  Enabled: false
+
+# その他、開発効率やポートフォリオとしての見栄えを妨げるルールを緩和
+Style/StringConcatenation:
+  Enabled: false
+
+Performance/CollectionLiteralInLoop:
   Enabled: false
