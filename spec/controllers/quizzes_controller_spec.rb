@@ -76,7 +76,10 @@ RSpec.describe QuizzesController, type: :controller do
         allow(service).to receive_messages(call: nil, error_type: nil)
 
         # システムユーザーと公式ドリルを作成（handle_api_errorの分岐条件を満たすため）
-        system_user = create(:user, email: 'system@example.com')
+        # CI環境で既に存在する可能性があるため find_or_create_by を使用
+        system_user = User.find_or_create_by!(email: 'system@example.com') do |u|
+          u.password = 'password'
+        end
         create(:post, user: system_user)
       end
 
