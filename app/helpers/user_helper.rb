@@ -2,7 +2,10 @@
 
 module UserHelper
   def user_title(user)
-    level = user.level
+    user_title_text(user.level)
+  end
+
+  def user_title_text(level)
     case level
     when 1..9
       'ビギナー'

@@ -1,20 +1,25 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  resources :quizzes, only: %i[create show] do # クイズのリソースを定義
+  resources :quizzes, only: %i[index create show] do # クイズのリソースを定義
     member do # 特定のクイズに対するアクション
       post :answer # 回答を投稿するアクション
     end
   end
   root 'home#index'
   resources :reviews, only: [:index]
-  resources :posts, except: [:index]
+  resources :posts, only: %i[index show new create] do
+    collection do
+      get :official
+    end
+  end
   devise_for :users, controllers: {
     sessions: 'users/sessions'
   }
 
   devise_scope :user do
     post 'users/guest_sign_in', to: 'users/sessions#guest_sign_in'
+    post 'users/demo_sign_in/:level', to: 'users/demo_sessions#create', as: :users_demo_sign_in
   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

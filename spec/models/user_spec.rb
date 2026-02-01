@@ -29,11 +29,40 @@ RSpec.describe User, type: :model do
   end
 
   describe 'メソッドの検証' do
-    it 'ゲストユーザーが作成できること' do
-      described_class.where(email: 'guest@example.com').destroy_all
+    it 'ゲストユーザー（中級）が作成できること' do
+      described_class.where(email: 'intermediate@example.com').destroy_all
       expect { described_class.guest }.to change(described_class, :count).by(1)
       guest = described_class.last
-      expect(guest.email).to eq 'guest@example.com'
+      expect(guest.email).to eq 'intermediate@example.com'
+      expect(guest.level).to eq 29
+    end
+
+    describe 'Nil安全性（堅牢性）の検証' do
+      let(:user) { create(:user) }
+      let(:quiz) { create(:quiz) }
+
+      it 'streakがnilでもanswer_quizがエラーなく実行されること' do
+        # 必要な箇所のみnilにする
+        user.current_streak = nil
+        user.incorrect_streak = nil
+
+        expect { user.answer_quiz(quiz, true) }.not_to raise_error
+        expect(user.current_streak).to eq 1 # nil(0) + 1
+      end
+
+      it 'daily_streakがnilでもupdate_streak!がエラーなく実行されること' do
+        user.last_answered_date = Time.zone.yesterday
+        user.daily_streak = nil
+
+        expect { user.update_streak! }.not_to raise_error
+        expect(user.daily_streak).to eq 1 # nil(0) + 1
+      end
+
+      it 'xpがnilでもgain_xpがエラーなく実行されること' do
+        user.xp = nil
+        expect { user.gain_xp(10) }.not_to raise_error
+        expect(user.xp).to eq 10 # nil(0) + 10
+      end
     end
 
     describe '#update_streak!' do

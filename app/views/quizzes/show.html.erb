@@ -8,12 +8,15 @@
 <div class="auth-container">
   <div class="quiz-card">
     <div style="margin-bottom: 20px;">
-      <%= link_to "← 戻る", reviews_path, class: "button secondary", style: "font-size: 0.8rem; padding: 6px 12px;" %>
+      <%= link_to "← 戻る", "javascript:history.back()", class: "button secondary", style: "font-size: 0.8rem; padding: 6px 12px;" %>
     </div>
     <h1>クイズに挑戦</h1>
 
     <div class="form-field">
       <h2>問題</h2>
+      <% if ['beginner@example.com', 'intermediate@example.com', 'expert@example.com'].include?(current_user.email) %>
+      <p style="color: #10b981; font-size: 0.8rem; margin-bottom: 8px;">※ デモ用アカウントのため、正解を表示しています</p>
+      <% end %>
       <p><%= @quiz.question %></p>
     </div>
 
@@ -35,6 +38,9 @@
                       },
                       class: "option-button" do %>
         <%= option %>
+        <% if ['beginner@example.com', 'intermediate@example.com', 'expert@example.com'].include?(current_user.email) && option == @quiz.answer %>
+        <span style="font-size: 0.8rem; color: #10b981; margin-left: 8px;">（正解）</span>
+        <% end %>
         <% end %>
         <% end %>
       </div>

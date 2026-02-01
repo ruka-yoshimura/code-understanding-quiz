@@ -57,10 +57,10 @@ class User < ApplicationRecord
       end
 
       # コンボ処理
-      self.current_streak += 1
+      self.current_streak = current_streak.to_i + 1
       self.incorrect_streak = 0 # 不正解ストリークはリセット
 
-      if self.current_streak >= COMBO_THRESHOLD
+      if current_streak >= COMBO_THRESHOLD
         total_xp += COMBO_BONUS
         result[:combo_bonus] = true
         self.current_streak = 0 # ボーナス付与後にリセット
@@ -83,7 +83,7 @@ class User < ApplicationRecord
     else
       # 不正解の場合
       self.current_streak = 0 # 正解ストリークはリセット (コンボ終了)
-      self.incorrect_streak += 1
+      self.incorrect_streak = incorrect_streak.to_i + 1
 
       if incorrect_streak >= PENALTY_THRESHOLD
         lose_xp(PENALTY_AMOUNT)
@@ -100,11 +100,12 @@ class User < ApplicationRecord
   # 現在の継続日数に基づくXP獲得倍率を計算
   # 1日目: 1.0倍, 2日目: 1.1倍, ... 6日目以降: 1.5倍（上限）
   def streak_multiplier
-    return 1.0 if daily_streak < 2
+    ds = daily_streak.to_i
+    return 1.0 if ds < 2
 
     # 2日目なら daily_streak=2 -> bonus 0.1
     # bonus = (daily_streak - 1) * 0.1
-    bonus = (daily_streak - 1) * 0.1
+    bonus = (ds - 1) * 0.1
 
     # 最大 0.5 (合計 1.5倍) まで
     [1.0 + bonus, 1.5].min.round(1)
@@ -112,7 +113,7 @@ class User < ApplicationRecord
 
   # 経験値を獲得し、必要ならレベルアップする
   def gain_xp(amount)
-    self.xp += amount
+    self.xp = xp.to_i + amount
 
     # レベルアップ判定（ループで複数レベルアップにも対応）
     # レベル上限(50)に達している場合はレベルアップしない
@@ -126,18 +127,20 @@ class User < ApplicationRecord
 
   # 経験値を減らす（ただし0未満にはならない、レベルダウンもしない）
   def lose_xp(amount)
-    self.xp = [self.xp - amount, 0].max
+    self.xp = [xp.to_i - amount, 0].max
     save!
   end
 
   # 次のレベルまでの必要経験値を計算
   def required_xp_for_next_level
-    level * 50
+    level_val = level.to_i
+    level_val = 1 if level_val < 1
+    level_val * 50
   end
 
   # 現在のレベルでの進捗率（パーセント）を計算
   def xp_progress_percentage
-    [(xp.to_f / required_xp_for_next_level * 100).round, 100].min
+    [(xp.to_i.to_f / required_xp_for_next_level * 100).round, 100].min
   end
 
   # ユーザーが間違えたことのあるクイズを取得
@@ -159,7 +162,7 @@ class User < ApplicationRecord
       # 今日すでに回答済みなら何もしない
     elsif last_answered_date == today - 1
       # 昨日回答していれば継続
-      self.daily_streak += 1
+      self.daily_streak = daily_streak.to_i + 1
     else
       # 1日以上空いていればリセット
       self.daily_streak = 1
@@ -170,9 +173,10 @@ class User < ApplicationRecord
   end
 
   def self.guest
-    find_or_create_by!(email: 'guest@example.com') do |user|
+    find_or_create_by!(email: 'intermediate@example.com') do |user|
       user.password = SecureRandom.urlsafe_base64
-      # 開発用に初期レベルを設定したければここで
+      user.level = 29
+      user.xp = 1440
     end
   end
 end

@@ -74,13 +74,17 @@ RSpec.describe QuizzesController, type: :controller do
         service = instance_double(QuizGeneratorService)
         allow(QuizGeneratorService).to receive(:new).and_return(service)
         allow(service).to receive_messages(call: nil, error_type: nil)
+
+        # システムユーザーと公式ドリルを作成（handle_api_errorの分岐条件を満たすため）
+        system_user = create(:user, email: 'system@example.com')
+        create(:post, user: system_user)
       end
 
-      it '一般的なエラーメッセージが表示されること' do
+      it '公式ドリルへリダイレクトされること' do
         post :create, params: { post_id: post_record.id }
 
-        expect(response).to redirect_to(post_path(post_record))
-        expect(flash[:alert]).to include('クイズ生成に失敗')
+        expect(response).to redirect_to(official_posts_path)
+        expect(flash[:alert]).to include('AI生成が一時的に利用できません')
       end
     end
   end

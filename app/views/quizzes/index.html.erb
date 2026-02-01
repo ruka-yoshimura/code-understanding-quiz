@@ -1,0 +1,49 @@
+<div class="index-header">
+  <div style="flex: 1;">
+    <h1>生成したクイズ一覧</h1>
+    <p style="color: #94a3b8;">あなたが生成したクイズの履歴とステータスです。</p>
+  </div>
+  <div>
+    <%= link_to "間違えた問題のみ見る", reviews_path, class: "button secondary", style: "border-color: #f43f5e; color: #f43f5e;" %>
+    <%= link_to "ホームに戻る", root_path, class: "button secondary", style: "margin-left: 10px;" %>
+  </div>
+</div>
+
+<% if @quizzes.any? %>
+<div class="posts">
+  <% @quizzes.each do |quiz| %>
+  <div class="post-card" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
+    <div style="flex: 1;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+        <% if @solved_quiz_ids.include?(quiz.id) %>
+        <span class="status-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid rgba(16, 185, 129, 0.4);">
+          ✅ 正解済み
+        </span>
+        <% else %>
+        <span class="status-badge" style="background: rgba(244, 63, 94, 0.2); color: #f43f5e; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid rgba(244, 63, 94, 0.4);">
+          ❌ 未正解
+        </span>
+        <% end %>
+        <span style="font-size: 0.8rem; color: #94a3b8;">
+          <%= quiz.created_at.strftime("%Y/%m/%d %H:%M") %>
+        </span>
+      </div>
+
+      <h3 style="color: #e2e8f0; margin: 0 0 10px 0;"><%= quiz.question %></h3>
+      <%# 元のコードリンクはボタンとして分離するため削除 %>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+      <%= link_to "元のコード", post_path(quiz.post), class: "button secondary", style: "font-size: 0.8rem; white-space: nowrap; border-color: #3b82f6; color: #3b82f6;" %>
+      <%= link_to "再挑戦", quiz_path(quiz), class: "button secondary", style: "font-size: 0.8rem; white-space: nowrap;" %>
+    </div>
+  </div>
+  <% end %>
+</div>
+<% else %>
+<div class="quiz-card" style="text-align: center; padding: 60px;">
+  <h3>まだクイズが生成されていません</h3>
+  <p style="color: #94a3b8; margin-top: 10px;">コードを投稿して、AIにクイズを作ってもらいましょう！</p>
+  <%= link_to "新規投稿する", new_post_path, class: "button primary", style: "margin-top: 20px;" %>
+</div>
+<% end %>

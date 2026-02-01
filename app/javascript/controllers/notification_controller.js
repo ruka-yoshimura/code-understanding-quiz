@@ -10,28 +10,56 @@ export default class extends Controller {
     timer: { type: Number, default: 3000 },
   };
 
+  // 連続する通知を管理するための静的キュー
+  static queue = [];
+  static isProcessing = false;
+
   connect() {
+    this.enqueue(() => this.showNotification());
+  }
+
+  enqueue(action) {
+    this.constructor.queue.push(action);
+    this.processQueue();
+  }
+
+  processQueue() {
+    if (this.constructor.isProcessing) return;
+    if (this.constructor.queue.length === 0) return;
+
+    this.constructor.isProcessing = true;
+    const action = this.constructor.queue.shift();
+
+    action().then(() => {
+      this.constructor.isProcessing = false;
+      // Small delay between notifications for better UX
+      setTimeout(() => this.processQueue(), 300);
+    });
+  }
+
+  async showNotification() {
     if (this.typeValue === "toast") {
-      this.toast();
+      return this.toast();
     } else if (this.typeValue === "levelUp") {
-      this.levelUp();
+      return this.levelUp();
     } else if (this.typeValue === "popup") {
-      this.popup();
+      return this.popup();
     }
+    return Promise.resolve();
   }
 
   // 中心に出るポップアップ（正解・不正解用）
-  popup() {
+  async popup() {
     const title = this.titleValue;
     const html = this.htmlValue;
     const icon = this.iconValue || "success";
     const timer = this.timerValue;
 
-    Swal.fire({
+    return Swal.fire({
       title: title,
       html: html,
       icon: icon,
-      timer: 1500,
+      timer: timer,
       showConfirmButton: false,
       backdrop: `
         rgba(0,0,123,0.4)
@@ -42,11 +70,11 @@ export default class extends Controller {
   }
 
   // レベルアップ演出
-  levelUp() {
+  async levelUp() {
     const level = this.levelValue;
     const title = this.titleValue;
 
-    Swal.fire({
+    return Swal.fire({
       title: "Level Up!",
       html: `レベル <strong>${level}</strong> に到達しました！<br>称号: <strong>${title}</strong>`,
       icon: "success",
@@ -64,7 +92,7 @@ export default class extends Controller {
   }
 
   // トースト通知（XP獲得など）
-  toast() {
+  async toast() {
     const title = this.titleValue;
     const icon = this.iconValue || "success";
     const timer = this.timerValue;
@@ -81,7 +109,7 @@ export default class extends Controller {
       },
     });
 
-    Toast.fire({
+    return Toast.fire({
       icon: icon,
       title: title,
     });
