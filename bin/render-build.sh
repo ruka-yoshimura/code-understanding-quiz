@@ -3,7 +3,9 @@
 set -o errexit
 
 bundle install
-bundle exec rake assets:precompile
-bundle exec rake assets:clean
-bundle exec rake db:migrate
-bundle exec rake db:seed
+bundle exec rails assets:precompile
+bundle exec rails assets:clean
+bundle exec rails db:migrate
+
+# シードデータの投入（初回デプロイ時のみ実行、2回目以降はコメントアウト）
+bundle exec rails db:seed
