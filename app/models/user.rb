@@ -179,4 +179,38 @@ class User < ApplicationRecord
       user.xp = 1440
     end
   end
+
+  # デモユーザーを初期状態にリセット
+  def cleanup_demo_data!
+    initial_state = case email
+                    when 'beginner@example.com'
+                      { level: 1, xp: 0 }
+                    when 'intermediate@example.com'
+                      { level: 29, xp: 1440 }
+                    when 'expert@example.com'
+                      { level: 49, xp: 2400 }
+                    else
+                      return
+                    end
+
+    # ステータスをリセット
+    update!(
+      level: initial_state[:level],
+      xp: initial_state[:xp],
+      daily_streak: 0,
+      current_streak: 0,
+      incorrect_streak: 0,
+      last_answered_date: nil
+    )
+
+    # クイズ回答履歴を削除
+    quiz_answers.destroy_all
+
+    self
+  end
+
+  # デモユーザーかどうかを判定
+  def demo_user?
+    %w[beginner@example.com intermediate@example.com expert@example.com].include?(email)
+  end
 end

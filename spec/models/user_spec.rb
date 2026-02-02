@@ -65,6 +65,56 @@ RSpec.describe User, type: :model do
       end
     end
 
+    describe '#cleanup_demo_data!' do
+      context 'デモユーザーの場合' do
+        let(:demo_user) { described_class.find_or_create_by!(email: 'beginner@example.com') { |u| u.password = 'password' } }
+        let(:quiz) { create(:quiz) }
+
+        before do
+          # デモユーザーのデータを変更
+          demo_user.update!(level: 10, xp: 500, daily_streak: 5, current_streak: 2)
+          demo_user.quiz_answers.create!(quiz: quiz, correct: true)
+        end
+
+        it 'レベルとXPが初期状態にリセットされること' do
+          expect(demo_user.cleanup_demo_data!).to eq demo_user
+          expect(demo_user.level).to eq 1
+          expect(demo_user.xp).to eq 0
+        end
+
+        it 'ストリークが0にリセットされること' do
+          demo_user.cleanup_demo_data!
+          expect(demo_user.daily_streak).to eq 0
+          expect(demo_user.current_streak).to eq 0
+          expect(demo_user.incorrect_streak).to eq 0
+        end
+
+        it 'クイズ回答履歴が削除されること' do
+          expect { demo_user.cleanup_demo_data! }.to change { demo_user.quiz_answers.count }.from(1).to(0)
+        end
+      end
+
+      context '一般ユーザーの場合' do
+        let(:normal_user) { create(:user) }
+
+        it 'nilを返すこと' do
+          expect(normal_user.cleanup_demo_data!).to be_nil
+        end
+      end
+    end
+
+    describe '#demo_user?' do
+      it 'デモユーザーの場合trueを返すこと' do
+        demo = described_class.find_or_create_by!(email: 'beginner@example.com') { |u| u.password = 'password' }
+        expect(demo.demo_user?).to be true
+      end
+
+      it '一般ユーザーの場合falseを返すこと' do
+        normal = create(:user)
+        expect(normal.demo_user?).to be false
+      end
+    end
+
     describe '#update_streak!' do
       let(:user) { create(:user, daily_streak: 1, last_answered_date: Date.yesterday) }
 
