@@ -79,6 +79,4 @@ test:
 #
 production:
   <<: *default
-  database: code_understanding_quiz_production
-  username: code_understanding_quiz
-  password: <%= ENV["CODE_UNDERSTANDING_QUIZ_DATABASE_PASSWORD"] %>
+  url: <%= ENV['DATABASE_URL'] %>
