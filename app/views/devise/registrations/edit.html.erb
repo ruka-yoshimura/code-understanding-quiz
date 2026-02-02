@@ -5,45 +5,66 @@
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
     <%= render "devise/shared/error_messages", resource: resource %>
 
-    <div class="form-field">
-      <%= f.label :email %>
-      <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+    <% if resource.demo_user? %>
+    <div class="alert alert-warning" style="padding: 8px 12px; margin-bottom: 20px; font-size: 0.8rem; border-radius: 8px;">
+      <p style="margin: 0;">デモユーザーはプロフィールの変更やアカウントの削除ができません。</p>
     </div>
-
-    <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-    <div class="notice"><%= t('.currently_waiting_confirmation_for_email', email: resource.unconfirmed_email) %></div>
     <% end %>
 
     <div class="form-field">
-      <%= f.label :password %>
-      <span class="hint"><%= t('.leave_blank_if_you_don_t_want_to_change_it') %></span>
-      <%= f.password_field :password, autocomplete: "new-password" %>
+      <%= f.label :name, "ユーザー名" %>
+      <%= f.text_field :name, autofocus: true, disabled: resource.demo_user?, value: resource.display_name %>
+    </div>
+
+    <div class="form-field">
+      <%= f.label :email, "メールアドレス" %>
+      <%= f.email_field :email, autocomplete: "email", disabled: resource.demo_user? %>
+    </div>
+
+    <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+    <div class="notice">現在、<%= resource.unconfirmed_email %> の認証を待機しています。</div>
+    <% end %>
+
+    <div class="form-field">
+      <%= f.label :password, "新しいパスワード" %>
+      <span class="hint">（変更しない場合は空欄にしてください）</span>
+      <%= f.password_field :password, autocomplete: "new-password", disabled: resource.demo_user? %>
       <% if @minimum_password_length %>
-      <span class="hint"><%= t('devise.shared.minimum_password_length', count: @minimum_password_length) %></span>
+      <span class="hint">※<%= @minimum_password_length %>文字以上</span>
       <% end %>
     </div>
 
     <div class="form-field">
-      <%= f.label :password_confirmation %>
-      <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+      <%= f.label :password_confirmation, "新しいパスワード（確認用）" %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", disabled: resource.demo_user? %>
     </div>
 
     <div class="form-field">
-      <%= f.label :current_password %>
-      <span class="hint"><%= t('.we_need_your_current_password_to_confirm_your_changes') %></span>
-      <%= f.password_field :current_password, autocomplete: "current-password" %>
+      <%= f.label :current_password, "現在のパスワード" %>
+      <span class="hint">（変更を保存するには現在のパスワードが必要です）</span>
+      <%= f.password_field :current_password, autocomplete: "current-password", disabled: resource.demo_user? %>
     </div>
 
     <div class="form-actions">
-      <%= f.submit t('.update'), class: "button primary" %>
+      <%= f.submit "更新する", class: "button primary", disabled: resource.demo_user? %>
     </div>
     <% end %>
 
     <div class="auth-links">
-      <h3><%= t('.cancel_my_account') %></h3>
-      <p><%= t('.unhappy') %></p>
-      <%= button_to t('.cancel_my_account'), registration_path(resource_name), data: { confirm: t('.are_you_sure'), turbo_confirm: t('.are_you_sure') }, method: :delete, class: "nav-button" %>
-      <%= link_to t('devise.shared.links.back'), :back %>
+      <% if !resource.demo_user? %>
+      <div class="danger-zone" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(244, 63, 94, 0.2);">
+        <h3 style="color: #f43f5e; font-size: 0.9rem;">危険な操作</h3>
+        <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">一度アカウントを削除すると、これまでの学習データやランクは全て失われます。</p>
+        <%= button_to "アカウントを完全に削除する", registration_path(resource_name),
+              data: { confirm: "本当に退会しますか？この操作は取り消せません。", turbo_confirm: "本当に退会しますか？この操作は取り消せません。" },
+              method: :delete,
+              class: "button secondary",
+              style: "color: #f43f5e; border-color: rgba(244, 63, 94, 0.3); font-size: 0.8rem;" %>
+      </div>
+      <% end %>
+      <div style="margin-top: 20px;">
+        <%= link_to "← ホームに戻る", root_path, style: "font-size: 0.9rem;" %>
+      </div>
     </div>
   </div>
 </div>

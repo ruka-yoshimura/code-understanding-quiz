@@ -4,7 +4,7 @@
     <div class="dashboard-main">
       <div class="dashboard-header">
         <div class="user-info">
-          <h2>こんにちは、<%= current_user.email.split('@').first %> さん</h2>
+          <h2>こんにちは、<%= current_user.display_name %> さん</h2>
           <div class="user-title-display" style="justify-content: flex-start;">
             <span class="rank-badge <%= user_rank_class(current_user) %>" id="dashboard-user-title"><%= user_title(current_user) %></span>
           </div>
