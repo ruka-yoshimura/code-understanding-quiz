@@ -71,6 +71,8 @@ RSpec.describe User, type: :model do
         let(:quiz) { create(:quiz) }
 
         before do
+          # 既存の回答履歴をクリアしてテストの状態を一定にする
+          demo_user.quiz_answers.destroy_all
           # デモユーザーのデータを変更
           demo_user.update!(level: 10, xp: 500, daily_streak: 5, current_streak: 2)
           demo_user.quiz_answers.create!(quiz: quiz, correct: true)
