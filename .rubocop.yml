@@ -1,0 +1,87 @@
+plugins:
+  - rubocop-rails
+  - rubocop-performance
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - "bin/**/*"
+    - "db/schema.rb"
+    - "db/migrate/**/*"
+    - "vendor/**/*"
+    - "config/environments/*"
+    - "node_modules/**/*"
+
+# 日本語コメントを許可
+Style/AsciiComments:
+  Enabled: false
+
+# ドキュメント（クラス冒頭のコメント）は必須にしない
+Style/Documentation:
+  Enabled: false
+
+# 文字列のクォートは一貫していればOK（Railsデフォルトはダブルかシングルか厳格すぎる場合があるため）
+# ただし、厳格にダブルに寄せたい場合はここを弄らない
+# Style/StringLiterals:
+#   EnforcedStyle: double_quotes
+
+# メソッドの長さ制限
+Metrics/MethodLength:
+  Enabled: false
+
+# クラスの長さ制限を少し緩和
+Metrics/ClassLength:
+  Max: 150
+
+# ブロックの長さ制限
+Metrics/BlockLength:
+  Exclude:
+    - "config/routes.rb"
+    - "spec/**/*"
+
+# 言語設定（i18n）を推奨するが、ポートフォリオでは必須にしない
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+# RSpec関連の細かいルールを緩和（日本語テスト名や複数の検証を許可）
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 5
+
+RSpec/ContextWording:
+  Enabled: false
+
+# クイズの選択肢などで option_1, option_2 を使うため
+Naming/VariableNumber:
+  Enabled: false
+
+# 複雑度の計算系はポートフォリオレベルではノイズになりやすいため無効化
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+# 行の長さ制限を緩和
+Layout/LineLength:
+  Max: 160
+
+# RSpecでの allow_any_instance_of を許容（テストの書きやすさ優先）
+RSpec/AnyInstance:
+  Enabled: false
+
+# その他、開発効率やポートフォリオとしての見栄えを妨げるルールを緩和
+Style/StringConcatenation:
+  Enabled: false
+
+Performance/CollectionLiteralInLoop:
+  Enabled: false

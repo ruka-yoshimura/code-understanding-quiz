@@ -1,0 +1,42 @@
+<div class="auth-container">
+  <div class="auth-card" style="max-width: 800px;">
+    <h1 style="color: #10b981; margin-bottom: 20px;">🔰 公式ドリル一覧</h1>
+    <p style="text-align: center; color: #94a3b8; margin-bottom: 30px;">
+      システムが厳選した良質な問題集です。<br>
+      AI生成が不安定な場合や、基礎を確認したい場合にご活用ください。
+    </p>
+
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+      <% @posts.each do |post| %>
+      <%= link_to post_path(post), class: "official-drill-card", style: "display: block; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 20px; transition: all 0.2s;" do %>
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <h3 style="color: #e2e8f0; margin: 0 0 5px 0; font-size: 1.1rem;"><%= post.title %></h3>
+          <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">
+            収録クイズ: <%= post.quizzes.count %> 問
+          </p>
+        </div>
+        <div style="color: #10b981; font-weight: bold; font-size: 1.2rem;">→</div>
+      </div>
+      <% end %>
+      <% end %>
+
+      <% if @posts.empty? %>
+      <p style="text-align: center; color: #64748b;">現在、公式ドリルは準備中です。</p>
+      <% end %>
+    </div>
+
+    <div class="auth-links" style="margin-top: 40px;">
+      <%= link_to '戻る', "javascript:history.back()" %>
+    </div>
+  </div>
+</div>
+
+<style>
+  .official-drill-card:hover {
+    background: rgba(16, 185, 129, 0.1) !important;
+    transform: translateY(-2px);
+    border-color: #10b981 !important;
+    text-decoration: none;
+  }
+</style>

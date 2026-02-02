@@ -1,0 +1,28 @@
+databases:
+  - name: code-understanding-quiz-db
+    databaseName: code_understanding_quiz_production
+    user: code_understanding_quiz
+    plan: free
+
+services:
+  - type: web
+    name: code-understanding-quiz
+    runtime: ruby
+    plan: free
+    buildCommand: "./bin/render-build.sh"
+    startCommand: "bundle exec puma -C config/puma.rb"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: code-understanding-quiz-db
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_LOG_TO_STDOUT
+        value: enabled
+      - key: RAILS_SERVE_STATIC_FILES
+        value: enabled

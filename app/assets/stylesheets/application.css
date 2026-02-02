@@ -17,8 +17,15 @@
 /* Global Styles */
 body {
   margin: 0;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
   background-color: #0f172a;
   color: #f8fafc;
 }
@@ -70,6 +77,38 @@ body {
 
 .nav-links a:hover {
   color: #38bdf8;
+}
+
+/* Header Stats */
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 5px 15px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-right: 10px;
+}
+
+.stat-item {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.user-title-badge {
+  font-size: 0.75rem;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  color: #0f172a;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow:
+    0 2px 4px -1px rgba(251, 191, 36, 0.3),
+    0 0 10px rgba(251, 191, 36, 0.3);
+  border: 1px solid rgba(251, 191, 36, 0.5);
 }
 
 /* Links */
@@ -143,10 +182,8 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: linear-gradient(
-      rgba(15, 23, 42, 0.6),
-      rgba(15, 23, 42, 0.6)
-    ),
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.6)),
     url("landing_page_bg.png");
   background-size: cover;
   background-position: center;
@@ -323,7 +360,8 @@ a:hover {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2),
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.2),
     0 10px 10px -5px rgba(0, 0, 0, 0.1);
 }
 
@@ -431,11 +469,92 @@ a:hover {
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  padding: 30px;
-  margin-bottom: 40px;
+  padding: 16px 24px;
+  margin-bottom: 20px;
+}
+
+.dashboard-layout {
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
+}
+
+@media (max-width: 992px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+}
+
+.dashboard-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.dashboard-sidebar {
+  width: 280px;
+  display: flex;
+}
+
+@media (max-width: 992px) {
+  .dashboard-sidebar {
+    width: 100%;
+  }
+}
+
+.review-action-card {
+  width: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(244, 63, 94, 0.1) 0%,
+    rgba(225, 29, 72, 0.2) 100%
+  );
+  border: 2px solid rgba(244, 63, 94, 0.3);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  transition: all 0.3s ease;
+  text-decoration: none !important;
+  cursor: pointer;
+}
+
+.review-action-card:hover {
+  transform: translateY(-5px);
+  background: linear-gradient(
+    135deg,
+    rgba(244, 63, 94, 0.2) 0%,
+    rgba(225, 29, 72, 0.3) 100%
+  );
+  border-color: rgba(244, 63, 94, 0.6);
+  box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.4);
+}
+
+.review-action-card .icon {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
+.review-action-card h3 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 1rem;
+}
+
+.review-action-card .count {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #f43f5e;
+  margin: 4px 0;
+}
+
+.review-action-card .label {
+  color: #94a3b8;
+  font-size: 0.875rem;
 }
 
 .dashboard-header {
@@ -456,6 +575,143 @@ a:hover {
   font-size: 0.875rem;
 }
 
+.user-title-display {
+  margin: 10px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.rank-badge {
+  display: inline-block;
+  font-size: 1.1rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  color: #0f172a;
+  padding: 8px 24px;
+  border-radius: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  box-shadow:
+    0 4px 6px -1px rgba(251, 191, 36, 0.3),
+    0 2px 4px -1px rgba(251, 191, 36, 0.2),
+    0 0 20px rgba(251, 191, 36, 0.4);
+  border: 2px solid rgba(251, 191, 36, 0.5);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 4px 6px -1px rgba(251, 191, 36, 0.3),
+      0 2px 4px -1px rgba(251, 191, 36, 0.2),
+      0 0 20px rgba(251, 191, 36, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 4px 6px -1px rgba(251, 191, 36, 0.5),
+      0 2px 4px -1px rgba(251, 191, 36, 0.3),
+      0 0 30px rgba(251, 191, 36, 0.6);
+  }
+}
+
+/* Rank-specific color themes */
+.rank-beginner {
+  background: linear-gradient(
+    135deg,
+    #94a3b8 0%,
+    #64748b 50%,
+    #475569 100%
+  ) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(148, 163, 184, 0.3),
+    0 2px 4px -1px rgba(148, 163, 184, 0.2),
+    0 0 20px rgba(148, 163, 184, 0.4) !important;
+  border: 2px solid rgba(148, 163, 184, 0.5) !important;
+}
+
+.rank-apprentice {
+  background: linear-gradient(
+    135deg,
+    #34d399 0%,
+    #10b981 50%,
+    #059669 100%
+  ) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(16, 185, 129, 0.3),
+    0 2px 4px -1px rgba(16, 185, 129, 0.2),
+    0 0 20px rgba(16, 185, 129, 0.4) !important;
+  border: 2px solid rgba(16, 185, 129, 0.5) !important;
+}
+
+.rank-explorer {
+  background: linear-gradient(
+    135deg,
+    #60a5fa 0%,
+    #3b82f6 50%,
+    #2563eb 100%
+  ) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(59, 130, 246, 0.3),
+    0 2px 4px -1px rgba(59, 130, 246, 0.2),
+    0 0 20px rgba(59, 130, 246, 0.4) !important;
+  border: 2px solid rgba(59, 130, 246, 0.5) !important;
+}
+
+.rank-specialist {
+  background: linear-gradient(
+    135deg,
+    #c084fc 0%,
+    #a855f7 50%,
+    #9333ea 100%
+  ) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(168, 85, 247, 0.3),
+    0 2px 4px -1px rgba(168, 85, 247, 0.2),
+    0 0 20px rgba(168, 85, 247, 0.4) !important;
+  border: 2px solid rgba(168, 85, 247, 0.5) !important;
+}
+
+.rank-master {
+  background: linear-gradient(
+    135deg,
+    #f87171 0%,
+    #ef4444 50%,
+    #dc2626 100%
+  ) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(239, 68, 68, 0.3),
+    0 2px 4px -1px rgba(239, 68, 68, 0.2),
+    0 0 20px rgba(239, 68, 68, 0.4) !important;
+  border: 2px solid rgba(239, 68, 68, 0.5) !important;
+}
+
+.rank-legend {
+  background: linear-gradient(
+    135deg,
+    #fbbf24 0%,
+    #f59e0b 50%,
+    #d97706 100%
+  ) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(251, 191, 36, 0.3),
+    0 2px 4px -1px rgba(251, 191, 36, 0.2),
+    0 0 20px rgba(251, 191, 36, 0.4) !important;
+  border: 2px solid rgba(251, 191, 36, 0.5) !important;
+}
+
+/* Update header badge to use smaller shadows */
+.user-title-badge.rank-beginner,
+.user-title-badge.rank-apprentice,
+.user-title-badge.rank-explorer,
+.user-title-badge.rank-specialist,
+.user-title-badge.rank-master,
+.user-title-badge.rank-legend {
+  box-shadow:
+    0 2px 4px -1px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(0, 0, 0, 0.3) !important;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -464,7 +720,7 @@ a:hover {
 
 .stat-card {
   background: rgba(15, 23, 42, 0.4);
-  padding: 20px;
+  padding: 12px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   text-align: center;
@@ -480,7 +736,7 @@ a:hover {
 }
 
 .stat-value {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #38bdf8;
 }
@@ -521,16 +777,44 @@ a:hover {
   margin-bottom: 20px;
 }
 
+.posts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .posts {
+    grid-template-columns: 1fr;
+  }
+}
+
 .post-card {
   background: rgba(30, 41, 59, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 20px;
-  margin-bottom: 15px;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .post-card:hover {
   border-color: rgba(56, 189, 248, 0.3);
   transform: translateY(-2px);
+}
+
+/* 継続日数のハイライト */
+.streak-highlight {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.2),
+    rgba(239, 68, 68, 0.2)
+  ) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+.streak-highlight .stat-value {
+  color: #f59e0b !important;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
 }

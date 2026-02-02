@@ -1,17 +1,51 @@
 <div class="auth-container">
   <div class="auth-card" style="max-width: 800px;">
-    <h1><%= @post.title %></h1>
+    <% is_official_drill = @post.user.email == 'system@example.com' %>
 
+    <% if is_official_drill %>
+    <h1 style="color: #10b981;">🔰 公式ドリル: <%= @post.title %></h1>
+    <% else %>
+    <h1><%= @post.title %></h1>
+    <% end %>
+
+    <% unless is_official_drill %>
     <div class="code-block">
       <pre><code><%= @post.content %></code></pre>
     </div>
 
-    <div class="form-actions">
-      <%= button_to "このコードでクイズを作る", quizzes_path(post_id: @post.id), method: :post, class: "button primary", form: { data: { turbo: false } } %>
+    <div class="form-field">
+      <p style="color: #94a3b8; font-size: 0.875rem;">
+        これまでに生成されたクイズ: <strong><%= @post.quizzes.count %></strong> 回
+      </p>
     </div>
 
+    <div class="form-actions" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+      <p style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 12px; text-align: center;">AIでこのコードからクイズを生成します：</p>
+      <% if ['beginner@example.com', 'intermediate@example.com', 'expert@example.com'].include?(current_user.email) %>
+      <p style="color: #10b981; font-size: 0.8rem; margin-bottom: 12px; text-align: center;">※ デモ用アカウントのため、正解が表示されます</p>
+      <% end %>
+      <%= button_to "AIで新しいクイズを作る", quizzes_path(post_id: @post.id), method: :post, class: "button primary", style: "width: 100%; box-sizing: border-box;", form: { data: { turbo: false } } %>
+    </div>
+    <% end %>
+
+    <% if @post.quizzes.any? %>
+    <div class="form-field" style="<%= is_official_drill ? 'margin-top: 10px;' : 'margin-top: 30px; opacity: 0.8;' %>">
+      <h3 style="color: #38bdf8; font-size: 1.0rem; margin-bottom: 12px; border-bottom: 1px dashed rgba(56, 189, 248, 0.3); padding-bottom: 5px;"><%= is_official_drill ? '収録されている問題' : '作成済みのクイズ（失敗時用）' %></h3>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <% @post.quizzes.each_with_index do |quiz, index| %>
+        <%= link_to "問題 ##{index + 1} に挑戦する", quiz_path(quiz), class: "button secondary", style: "width: 100%; text-align: center; border-color: rgba(56, 189, 248, 0.3); box-sizing: border-box; font-size: 0.9rem; padding: 12px;" %>
+        <% end %>
+      </div>
+    </div>
+    <% end %>
+
     <div class="auth-links">
-      <%= link_to 'ホームに戻る', root_path %>
+      <% unless is_official_drill %>
+      <div style="margin-bottom: 20px;">
+        <%= link_to "🔰 公式ドリル一覧（APIエラー時など）", official_posts_path, class: "button secondary", style: "width: 100%; text-align: center; border-color: rgba(16, 185, 129, 0.5); color: #10b981; box-sizing: border-box;" %>
+      </div>
+      <% end %>
+      <%= link_to '戻る', "javascript:history.back()" %>
     </div>
   </div>
 </div>

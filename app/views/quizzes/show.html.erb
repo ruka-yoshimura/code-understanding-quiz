@@ -1,9 +1,22 @@
+<%# クイズ回答用のCSS調整 %>
+<style>
+  .options-list .button_to {
+    width: 100%;
+  }
+</style>
+
 <div class="auth-container">
   <div class="quiz-card">
+    <div style="margin-bottom: 20px;">
+      <%= link_to "← 戻る", "javascript:history.back()", class: "button secondary", style: "font-size: 0.8rem; padding: 6px 12px;" %>
+    </div>
     <h1>クイズに挑戦</h1>
 
     <div class="form-field">
       <h2>問題</h2>
+      <% if ['beginner@example.com', 'intermediate@example.com', 'expert@example.com'].include?(current_user.email) %>
+      <p style="color: #10b981; font-size: 0.8rem; margin-bottom: 8px;">※ デモ用アカウントのため、正解を表示しています</p>
+      <% end %>
       <p><%= @quiz.question %></p>
     </div>
 
@@ -11,42 +24,34 @@
       <pre><code><%= @quiz.original_code %></code></pre>
     </div>
 
-    <div class="options">
+    <div class="options" data-controller="quiz">
       <h2>選択肢</h2>
       <div class="options-list">
         <% [@quiz.answer, @quiz.option_1, @quiz.option_2].shuffle.each do |option| %>
-        <button class="option-button" onclick="checkAnswer(this, '<%= option == @quiz.answer %>')">
-          <%= option %>
-        </button>
+        <%= button_to answer_quiz_path(@quiz, is_correct: option == @quiz.answer),
+                      method: :post,
+                      data: {
+                        turbo_stream: true,
+                        quiz_target: "option",
+                        action: "click->quiz#submit",
+                        is_correct: option == @quiz.answer
+                      },
+                      class: "option-button" do %>
+        <%= option %>
+        <% if ['beginner@example.com', 'intermediate@example.com', 'expert@example.com'].include?(current_user.email) && option == @quiz.answer %>
+        <span style="font-size: 0.8rem; color: #10b981; margin-left: 8px;">（正解）</span>
+        <% end %>
+        <% end %>
         <% end %>
       </div>
-    </div>
 
-    <div id="explanation" class="explanation-card">
-      <h3>解説</h3>
-      <p><%= @quiz.explanation %></p>
-      <div class="auth-links">
-        <%= link_to "ホームに戻る", root_path, class: "button secondary" %>
+      <div id="explanation" class="explanation-card" data-quiz-target="explanation">
+        <h3>解説</h3>
+        <p><%= @quiz.explanation %></p>
+        <div class="auth-links">
+          <%= link_to "ホームに戻る", root_path, class: "button secondary" %>
+        </div>
       </div>
     </div>
   </div>
 </div>
-
-<script>
-  function checkAnswer(btn, isCorrect) {
-    // 全てのボタンを無効化
-    document.querySelectorAll('.option-button').forEach(b => b.disabled = true);
-
-    if (isCorrect === 'true') {
-      btn.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
-      btn.style.borderColor = '#10b981';
-      btn.style.color = '#10b981';
-    } else {
-      btn.style.backgroundColor = 'rgba(244, 63, 94, 0.2)';
-      btn.style.borderColor = '#f43f5e';
-      btn.style.color = '#f43f5e';
-    }
-
-    document.getElementById('explanation').style.display = 'block';
-  }
-</script>
