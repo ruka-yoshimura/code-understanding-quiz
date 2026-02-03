@@ -818,3 +818,54 @@ a:hover {
   color: #f59e0b !important;
   text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
 }
+
+/* Markdown Content */
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content p {
+  margin-bottom: 1rem;
+}
+
+.markdown-content code {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: #38bdf8;
+  font-size: 0.9em;
+}
+
+.markdown-content pre {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 15px 0;
+  overflow-x: auto;
+}
+
+.markdown-content pre code {
+  background: transparent;
+  padding: 0;
+  color: #e2e8f0;
+  display: block;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.25rem;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid #334155;
+  padding-left: 1rem;
+  color: #94a3b8;
+  margin: 0 0 1rem 0;
+}

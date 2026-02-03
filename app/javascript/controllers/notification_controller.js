@@ -7,7 +7,7 @@ export default class extends Controller {
     title: String,
     html: String,
     icon: String,
-    timer: { type: Number, default: 3000 },
+    timer: { type: Number, default: 1500 },
   };
 
   // 連続する通知を管理するための静的キュー

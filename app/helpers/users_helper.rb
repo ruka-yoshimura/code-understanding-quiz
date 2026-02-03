@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module UserHelper
+module UsersHelper
   def user_title(user)
     user_title_text(user.level)
   end

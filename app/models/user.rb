@@ -174,46 +174,41 @@ class User < ApplicationRecord
     save!
   end
 
-  def self.guest
-    find_or_create_by!(email: 'intermediate@example.com') do |user|
-      user.password = SecureRandom.urlsafe_base64
-      user.level = 29
-      user.xp = 1440
-    end
-  end
-
   # デモユーザーを初期状態にリセット
   def cleanup_demo_data!
     initial_state = case email
                     when 'beginner@example.com'
-                      { level: 1, xp: 0 }
-                    when 'intermediate@example.com'
-                      { level: 29, xp: 1440 }
+                      { level: 1, xp: 40, daily_streak: 1, last_answered_date: Time.zone.today }
                     when 'expert@example.com'
-                      { level: 49, xp: 2400 }
+                      { level: 49, xp: 2440, daily_streak: 15, last_answered_date: Time.zone.today }
                     else
                       return
                     end
 
-    # ステータスをリセット
+    # ステータスと名前をリセット
     update!(
+      name: nil,
       level: initial_state[:level],
       xp: initial_state[:xp],
-      daily_streak: 0,
+      daily_streak: initial_state[:daily_streak],
       current_streak: 0,
       incorrect_streak: 0,
-      last_answered_date: nil
+      last_answered_date: initial_state[:last_answered_date]
     )
 
-    # クイズ回答履歴を削除
+    # 投稿データ（紐づくクイズも含む）と回答履歴を削除
+    posts.destroy_all
     quiz_answers.destroy_all
 
-    self
+    # 初期データを再投入
+    DemoDataService.seed_for(self)
+
+    reload
   end
 
   # デモユーザーかどうかを判定
   def demo_user?
-    %w[beginner@example.com intermediate@example.com expert@example.com].include?(email)
+    %w[beginner@example.com expert@example.com].include?(email)
   end
 
   # 表示用ユーザー名（名前がなければメールアドレスの@の前を返す）

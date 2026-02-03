@@ -19,9 +19,13 @@
         <span class="status-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid rgba(16, 185, 129, 0.4);">
           ✅ 正解済み
         </span>
-        <% else %>
+        <% elsif @weak_quiz_ids.include?(quiz.id) %>
         <span class="status-badge" style="background: rgba(244, 63, 94, 0.2); color: #f43f5e; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid rgba(244, 63, 94, 0.4);">
-          ❌ 未正解
+          ❌ 不正解（要復習）
+        </span>
+        <% else %>
+        <span class="status-badge" style="background: rgba(148, 163, 184, 0.1); color: #94a3b8; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid rgba(148, 163, 184, 0.3);">
+          未挑戦
         </span>
         <% end %>
         <span style="font-size: 0.8rem; color: #94a3b8;">

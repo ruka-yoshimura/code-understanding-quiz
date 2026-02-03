@@ -55,16 +55,16 @@
         <div style="display: flex; flex-direction: column; gap: 8px; margin: 10px 0; font-size: 0.85rem;">
           <%
              total_answers = current_user.quiz_answers.count
-             incorrect_answers = current_user.quiz_answers.where(correct: false).count
-             correct_rate = total_answers > 0 ? ((total_answers - incorrect_answers).to_f / total_answers * 100).round : 0
+             incorrect_quizzes_count = current_user.weak_quizzes.count
+             correct_rate = total_answers > 0 ? ((total_answers - current_user.quiz_answers.where(correct: false).count).to_f / total_answers * 100).round : 0
           %>
           <div style="display: flex; justify-content: space-between;">
-            <span style="color: #94a3b8;">回答数:</span>
-            <span><%= total_answers %> 問</span>
+            <span style="color: #94a3b8;">総回答数:</span>
+            <span><%= total_answers %> 回</span>
           </div>
           <div style="display: flex; justify-content: space-between;">
-            <span style="color: #f43f5e;">間違い:</span>
-            <span><%= incorrect_answers %> 問</span>
+            <span style="color: #f43f5e;">未正解の問題:</span>
+            <span><%= incorrect_quizzes_count %> 問</span>
           </div>
           <div style="display: flex; justify-content: space-between;">
             <span style="color: #10b981;">正解率:</span>
@@ -78,7 +78,7 @@
 </section>
 
 <%# デモレベル切り替えパネル（デモユーザーのみ表示） %>
-<% if ['beginner@example.com', 'intermediate@example.com', 'expert@example.com'].include?(current_user.email) %>
+<% if ['beginner@example.com', 'expert@example.com'].include?(current_user.email) %>
 <section class="demo-switcher-section" style="margin: 20px 0; padding: 20px; background: rgba(30, 41, 59, 0.5); border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.1);">
   <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
     <div style="display: flex; align-items: center; gap: 15px;">
@@ -90,7 +90,6 @@
     </div>
     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
       <%= link_to "初級レベル (Lv.1)", users_demo_sign_in_path(level: 1), data: { "turbo-method": :post }, class: "button secondary", style: "font-size: 0.8rem; padding: 10px 20px; border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981;" %>
-      <%= link_to "中級レベル (Lv.29)", users_demo_sign_in_path(level: 29), data: { "turbo-method": :post }, class: "button secondary", style: "font-size: 0.8rem; padding: 10px 20px; border: 1px solid rgba(59, 130, 246, 0.3); color: #3b82f6;" %>
       <%= link_to "上級レベル (Lv.49)", users_demo_sign_in_path(level: 49), data: { "turbo-method": :post }, class: "button secondary", style: "font-size: 0.8rem; padding: 10px 20px; border: 1px solid rgba(245, 158, 11, 0.3); color: #f59e0b;" %>
     </div>
   </div>

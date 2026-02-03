@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
+  helper :all
   before_action :set_locale
   before_action :configure_permitted_parameters, if: :devise_controller?
 

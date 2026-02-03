@@ -53,7 +53,8 @@
          data-notification-type-value="popup"
          data-notification-title-value="正解！"
          data-notification-html-value="<%= message %>"
-         data-notification-icon-value="success">
+         data-notification-icon-value="success"
+         data-notification-timer-value="1500">
     </div>
   <% end %>
 
@@ -75,7 +76,8 @@
              data-notification-type-value="popup"
              data-notification-title-value="称号ランクアップ！"
              data-notification-html-value="新たな称号 <strong><%= @result[:new_title_text] %></strong> を獲得しました！"
-             data-notification-icon-value="trophy">
+             data-notification-icon-value="trophy"
+             data-notification-timer-value="2500">
         </div>
       <% end %>
     <% end %>
@@ -86,7 +88,8 @@
     <div data-controller="notification"
          data-notification-type-value="popup"
          data-notification-title-value="残念！不正解です"
-         data-notification-icon-value="error">
+         data-notification-icon-value="error"
+         data-notification-timer-value="1500">
     </div>
   <% end %>
 

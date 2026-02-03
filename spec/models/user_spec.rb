@@ -29,13 +29,6 @@ RSpec.describe User, type: :model do
   end
 
   describe 'メソッドの検証' do
-    it 'ゲストユーザー（中級）が作成できること' do
-      described_class.where(email: 'intermediate@example.com').destroy_all
-      expect { described_class.guest }.to change(described_class, :count).by(1)
-      guest = described_class.last
-      expect(guest.email).to eq 'intermediate@example.com'
-      expect(guest.level).to eq 29
-    end
 
     describe 'Nil安全性（堅牢性）の検証' do
       let(:user) { create(:user) }
@@ -73,15 +66,18 @@ RSpec.describe User, type: :model do
         before do
           # 既存の回答履歴をクリアしてテストの状態を一定にする
           demo_user.quiz_answers.destroy_all
+          demo_user.posts.destroy_all
           # デモユーザーのデータを変更
-          demo_user.update!(level: 10, xp: 500, daily_streak: 5, current_streak: 2)
+          demo_user.update!(name: 'Changed Name', level: 10, xp: 500, daily_streak: 5, current_streak: 2)
+          post = demo_user.posts.create!(title: 'Demo Post', content: 'puts 1')
           demo_user.quiz_answers.create!(quiz: quiz, correct: true)
         end
 
-        it 'レベルとXPが初期状態にリセットされること' do
+        it 'レベル、XP、名前が初期状態にリセットされること' do
           expect(demo_user.cleanup_demo_data!).to eq demo_user
           expect(demo_user.level).to eq 1
           expect(demo_user.xp).to eq 0
+          expect(demo_user.name).to be_nil
         end
 
         it 'ストリークが0にリセットされること' do
@@ -91,8 +87,9 @@ RSpec.describe User, type: :model do
           expect(demo_user.incorrect_streak).to eq 0
         end
 
-        it 'クイズ回答履歴が削除されること' do
+        it '投稿データとクイズ回答履歴が削除されること' do
           expect { demo_user.cleanup_demo_data! }.to change { demo_user.quiz_answers.count }.from(1).to(0)
+            .and change { demo_user.posts.count }.from(1).to(0)
         end
       end
 

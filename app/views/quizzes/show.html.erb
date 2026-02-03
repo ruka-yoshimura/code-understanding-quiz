@@ -14,10 +14,12 @@
 
     <div class="form-field">
       <h2>問題</h2>
-      <% if ['beginner@example.com', 'intermediate@example.com', 'expert@example.com'].include?(current_user.email) %>
+      <% if ['beginner@example.com', 'expert@example.com'].include?(current_user.email) %>
       <p style="color: #10b981; font-size: 0.8rem; margin-bottom: 8px;">※ デモ用アカウントのため、正解を表示しています</p>
       <% end %>
-      <p><%= @quiz.question %></p>
+      <div class="markdown-content">
+        <%= markdown(@quiz.question) %>
+      </div>
     </div>
 
     <div class="code-block">
@@ -38,7 +40,7 @@
                       },
                       class: "option-button" do %>
         <%= option %>
-        <% if ['beginner@example.com', 'intermediate@example.com', 'expert@example.com'].include?(current_user.email) && option == @quiz.answer %>
+        <% if ['beginner@example.com', 'expert@example.com'].include?(current_user.email) && option == @quiz.answer %>
         <span style="font-size: 0.8rem; color: #10b981; margin-left: 8px;">（正解）</span>
         <% end %>
         <% end %>
@@ -47,7 +49,9 @@
 
       <div id="explanation" class="explanation-card" data-quiz-target="explanation">
         <h3>解説</h3>
-        <p><%= @quiz.explanation %></p>
+        <div class="markdown-content">
+          <%= markdown(@quiz.explanation) %>
+        </div>
         <div class="auth-links">
           <%= link_to "ホームに戻る", root_path, class: "button secondary" %>
         </div>

@@ -3,7 +3,18 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   static targets = ["option", "explanation"];
 
-  connect() {}
+  connect() {
+    // Turboキャッシュ等で残った表示状態をリセット
+    if (this.hasExplanationTarget) {
+      this.explanationTarget.style.display = "none";
+    }
+    this.optionTargets.forEach((button) => {
+      button.disabled = false;
+      button.style.backgroundColor = "";
+      button.style.borderColor = "";
+      button.style.color = "";
+    });
+  }
 
   submit(event) {
     // ボタンの多重クリック防止
