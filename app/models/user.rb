@@ -9,6 +9,8 @@ class User < ApplicationRecord
   has_many :posts, dependent: :destroy
   has_many :quiz_answers, dependent: :destroy
 
+  before_validation :set_default_name, on: :create
+
   validates :name, length: { maximum: 50 }
 
   # 1回の正解で獲得できる経験値
@@ -214,5 +216,11 @@ class User < ApplicationRecord
   # 表示用ユーザー名（名前がなければメールアドレスの@の前を返す）
   def display_name
     name.presence || email.split('@').first
+  end
+
+  private
+
+  def set_default_name
+    self.name = email.split('@').first if name.blank? && email.present?
   end
 end

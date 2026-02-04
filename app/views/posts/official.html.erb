@@ -1,42 +1,42 @@
-<div class="auth-container">
-  <div class="auth-card" style="max-width: 800px;">
-    <h1 style="color: #10b981; margin-bottom: 20px;">🔰 公式ドリル一覧</h1>
-    <p style="text-align: center; color: #94a3b8; margin-bottom: 30px;">
-      システムが厳選した良質な問題集です。<br>
-      AI生成が不安定な場合や、基礎を確認したい場合にご活用ください。
-    </p>
+<div class="max-w-4xl mx-auto py-12 px-4">
+  <div class="glass p-8 md:p-10 rounded-3xl shadow-2xl relative">
+    <!-- Header Icon -->
+    <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-emerald-500/20 rounded-2xl blur-2xl"></div>
+    <div class="text-center mb-10 relative">
+      <h1 class="text-3xl font-black text-emerald-400 italic tracking-tighter mb-4">🔰 公式ドリル一覧</h1>
+      <p class="text-slate-400 leading-relaxed">
+        システムが厳選した良質な問題集です。<br>
+        AI生成が不安定な場合や、基礎を確認したい場合にご活用ください。
+      </p>
+    </div>
 
-    <div style="display: flex; flex-direction: column; gap: 15px;">
+    <div class="space-y-4">
       <% @posts.each do |post| %>
-      <%= link_to post_path(post), class: "official-drill-card", style: "display: block; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 20px; transition: all 0.2s;" do %>
-      <div style="display: flex; align-items: center; justify-content: space-between;">
+      <%= link_to post_path(post), class: "block group relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-slate-800/50 p-6 transition-all hover:bg-emerald-500/10 hover:border-emerald-500 hover:-translate-y-1" do %>
+      <div class="flex items-center justify-between relative z-10">
         <div>
-          <h3 style="color: #e2e8f0; margin: 0 0 5px 0; font-size: 1.1rem;"><%= post.title %></h3>
-          <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">
-            収録クイズ: <%= post.quizzes.count %> 問
+          <h3 class="text-xl font-bold text-slate-100 mb-2 group-hover:text-emerald-300 transition-colors"><%= post.title %></h3>
+          <p class="text-sm text-slate-400 flex items-center gap-2">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+            収録クイズ: <span class="font-mono text-emerald-400"><%= post.quizzes.count %></span> 問
           </p>
         </div>
-        <div style="color: #10b981; font-weight: bold; font-size: 1.2rem;">→</div>
+        <div class="text-emerald-500 font-bold text-2xl opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+          →
+        </div>
       </div>
       <% end %>
       <% end %>
 
       <% if @posts.empty? %>
-      <p style="text-align: center; color: #64748b;">現在、公式ドリルは準備中です。</p>
+      <div class="text-center py-12 text-slate-500 bg-slate-900/30 rounded-2xl border border-white/5">
+        <p>現在、公式ドリルは準備中です。</p>
+      </div>
       <% end %>
     </div>
 
-    <div class="auth-links" style="margin-top: 40px;">
-      <%= link_to '戻る', "javascript:history.back()" %>
+    <div class="mt-12 text-center">
+      <%= link_to '戻る', :back, class: "inline-flex items-center justify-center px-6 py-3 rounded-xl text-sm font-bold text-slate-400 hover:text-white hover:bg-white/10 transition-all duration-300" %>
     </div>
   </div>
 </div>
-
-<style>
-  .official-drill-card:hover {
-    background: rgba(16, 185, 129, 0.1) !important;
-    transform: translateY(-2px);
-    border-color: #10b981 !important;
-    text-decoration: none;
-  }
-</style>

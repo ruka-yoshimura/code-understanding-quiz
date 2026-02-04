@@ -65,21 +65,22 @@
       <div data-controller="notification"
            data-notification-type-value="levelUp"
            data-notification-level-value="<%= @result[:new_level] %>"
-           data-notification-title-value="<%= user_title(current_user) %>">
+           data-notification-title-value="<%= user_title(current_user) %>"
+           data-notification-timer-value="1500">
       </div>
     <% end %>
+  <% end %>
 
-    <%# 称号昇格の通知（レベルアップとは別に表示） %>
-    <% if @result[:title_changed] %>
-      <%= turbo_stream.append "notifications" do %>
-        <div data-controller="notification"
-             data-notification-type-value="popup"
-             data-notification-title-value="称号ランクアップ！"
-             data-notification-html-value="新たな称号 <strong><%= @result[:new_title_text] %></strong> を獲得しました！"
-             data-notification-icon-value="trophy"
-             data-notification-timer-value="2500">
-        </div>
-      <% end %>
+  <%# 称号昇格の通知（レベルアップとは別に判定・表示） %>
+  <% if @result[:title_changed] %>
+    <%= turbo_stream.append "notifications" do %>
+      <div data-controller="notification"
+           data-notification-type-value="popup"
+           data-notification-title-value="称号ランクアップ！"
+           data-notification-html-value="新たな称号 <strong><%= @result[:new_title_text] %></strong> を獲得しました！"
+           data-notification-icon-value="success"
+           data-notification-timer-value="2500">
+      </div>
     <% end %>
   <% end %>
 <% else %>
@@ -96,9 +97,11 @@
   <% if @result[:penalty_applied] %>
     <%= turbo_stream.append "notifications" do %>
       <div data-controller="notification"
-           data-notification-type-value="toast"
-           data-notification-title-value="3連続不正解ペナルティ (-10 XP)"
-           data-notification-icon-value="warning">
+           data-notification-type-value="popup"
+           data-notification-title-value="3連続不正解ペナルティ"
+           data-notification-html-value="経験値が <strong>-10 XP</strong> 減算されました"
+           data-notification-icon-value="warning"
+           data-notification-timer-value="2500">
       </div>
     <% end %>
   <% end %>

@@ -10,36 +10,36 @@
   <%# Favicon & App Icons %>
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-
-  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
   <%= javascript_importmap_tags %>
   <%# 通知用のSweetAlert2 %>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<header class="main-header">
-  <nav>
-    <%= link_to "Code Understanding Quiz", root_path, class: "logo" %>
-    <div class="nav-links">
+<header class="sticky top-0 z-50 glass border-b border-white/5 px-4 md:px-8 py-3">
+  <nav class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <%= link_to "Code Understanding Quiz", root_path, class: "text-xl md:text-2xl font-black text-primary hover:opacity-80 transition-opacity tracking-tight" %>
+
+    <div class="flex flex-wrap items-center justify-center gap-3">
       <% if user_signed_in? %>
-      <div class="header-stats">
-        <span class="user-title-badge <%= user_rank_class(current_user) %>" id="user-title"><%= user_title(current_user) %></span>
-        <span class="stat-item">Lv.<span id="user-level"><%= current_user.level %></span></span>
-        <span class="stat-item"><span id="user-xp"><%= current_user.xp %></span> XP</span>
+      <div class="flex items-center gap-3 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-sm font-medium">
+        <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold <%= user_rank_class(current_user) %>"><%= user_title(current_user) %></span>
+        <span class="text-slate-300">Lv.<span id="user-level"><%= current_user.level %></span></span>
+        <span class="text-primary"><span id="user-xp"><%= current_user.xp %></span> XP</span>
       </div>
-      <%= link_to "ホーム", root_path %>
-      <%= link_to "マイページ", edit_user_registration_path %>
-      <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-button" %>
+      <%= link_to "ホーム", root_path, class: "text-sm text-slate-400 hover:text-white transition-colors" %>
+      <%= link_to "マイページ", edit_user_registration_path, class: "text-sm text-slate-400 hover:text-white transition-colors" %>
+      <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "text-sm text-rose-400 hover:text-rose-300 transition-colors bg-transparent border-none p-0 cursor-pointer" %>
       <% else %>
-      <%= link_to "ホーム", root_path %>
-      <%= link_to "ログイン", new_user_session_path %>
-      <%= link_to "新規登録", new_user_registration_path %>
+      <%= link_to "ホーム", root_path, class: "text-sm text-slate-400 hover:text-white transition-colors" %>
+      <%= link_to "ログイン", new_user_session_path, class: "text-sm text-slate-400 hover:text-white transition-colors" %>
+      <%= link_to "新規登録", new_user_registration_path, class: "btn-primary text-xs py-1.5 px-4" %>
       <% end %>
     </div>
   </nav>
 </header>
 
-<main class="container">
+<main class="max-w-7xl mx-auto p-4 md:p-8">
   <% flash.each do |message_type, message| %>
   <div class="flash-message <%= message_type %>">
     <%= message %>
@@ -48,6 +48,6 @@
   <%= yield %>
 </main>
 
-<div id="notifications" data-controller="notification"></div>
+<div id="notifications"></div>
 
 </html>

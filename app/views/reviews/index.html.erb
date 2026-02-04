@@ -1,32 +1,46 @@
-<div class="index-header">
-  <h1>間違えた問題に再挑戦</h1>
-  <p style="color: #94a3b8;">過去に間違えて、まだ正解できていないクイズです。再挑戦して理解を深めましょう！</p>
+<div class="mb-10">
+  <h1 class="text-3xl font-black text-rose-500 mb-2 flex items-center gap-3">
+    間違えた問題に再挑戦 🙅
+  </h1>
+  <p class="text-slate-400 text-sm">過去に間違えて、まだ正解できていないクイズです。再挑戦して理解を深めましょう！</p>
 </div>
 
 <% if @quizzes.any? %>
-<div class="posts">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
   <% @quizzes.each do |quiz| %>
-  <div class="post-card">
-    <h3 style="color: #38bdf8; margin-top: 0;"><%= quiz.question %></h3>
-    <p style="font-size: 0.875rem; color: #94a3b8; margin-bottom: 10px;">
-      元のコード: <%= quiz.post.title %>
+  <div class="glass p-6 md:p-8 rounded-3xl flex flex-col hover:border-rose-500/30 transition-all group relative overflow-hidden">
+    <div class="absolute -right-4 -top-4 text-6xl opacity-5 group-hover:opacity-10 transition-opacity rotate-12 group-hover:rotate-0 transition-transform">🔥</div>
+
+    <h3 class="text-xl font-bold text-white mb-2 leading-snug group-hover:text-rose-400 transition-colors">
+      <%= quiz.question %>
+    </h3>
+    <p class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-6">
+      SOURCE: <%= quiz.post.title %>
     </p>
 
-    <div class="code-block" style="margin: 10px 0; padding: 10px; max-height: 200px; overflow: hidden; position: relative;">
-      <pre><code><%= truncate(quiz.original_code, length: 300) %></code></pre>
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 30px; background: linear-gradient(transparent, #0f172a);"></div>
+    <div class="relative bg-slate-950/50 rounded-xl p-4 border border-white/5 font-mono text-[10px] leading-relaxed mb-6 overflow-hidden max-h-32 shadow-inner">
+      <pre><code class="text-slate-400"><%= truncate(quiz.original_code, length: 300) %></code></pre>
+      <div class="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-slate-950/80 to-transparent"></div>
     </div>
 
-    <div style="margin-top: 15px;">
-      <%= link_to "再挑戦する →", quiz_path(quiz), class: "button primary", style: "font-size: 0.875rem;" %>
+    <div class="mt-auto">
+      <%= link_to quiz_path(quiz), class: "btn-primary w-full block text-center py-3 text-sm" do %>
+      再挑戦する ✨
+      <% end %>
     </div>
   </div>
   <% end %>
 </div>
 <% else %>
-<div class="quiz-card" style="text-align: center; padding: 60px;">
-  <h3>🎉 苦手な問題はありません！</h3>
-  <p style="color: #94a3b8; margin-top: 10px;">素晴らしいです。新しいコードを投稿して、さらに知識を広げましょう。</p>
-  <%= link_to "ホームに戻る", root_path, class: "button secondary", style: "margin-top: 20px;" %>
+<div class="glass py-16 md:py-24 px-8 rounded-[3rem] text-center max-w-2xl mx-auto shadow-2xl shadow-emerald-500/5">
+  <div class="text-7xl mb-8 animate-bounce">🎉</div>
+  <h3 class="text-3xl font-black text-white mb-4 italic">Perfect Clearance!</h3>
+  <p class="text-slate-400 leading-relaxed mb-10">
+    素晴らしいです。現在、全てのクイズを克服しています。<br class="hidden md:block">
+    新しいコードを投稿するか、公式ドリルでさらなる高みを目指しましょう！
+  </p>
+  <%= link_to root_path, class: "btn-primary px-10 py-4" do %>
+  ホームへ戻る
+  <% end %>
 </div>
 <% end %>

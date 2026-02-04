@@ -6,20 +6,16 @@ export default class extends Controller {
   connect() {
     // Turboキャッシュ等で残った表示状態をリセット
     if (this.hasExplanationTarget) {
-      this.explanationTarget.style.display = "none";
+      this.explanationTarget.classList.add("hidden");
     }
     this.optionTargets.forEach((button) => {
       button.disabled = false;
-      button.style.backgroundColor = "";
-      button.style.borderColor = "";
-      button.style.color = "";
+      button.classList.remove("is-correct", "is-incorrect");
     });
   }
 
   submit(event) {
     // ボタンの多重クリック防止
-    // 注意: 即座にdisabledにするとブラウザによってはフォーム送信がキャンセルされるため、
-    // 処理の最後に回すか、setTimeoutを使用する
     setTimeout(() => {
       this.optionTargets.forEach((button) => {
         button.disabled = true;
@@ -31,22 +27,18 @@ export default class extends Controller {
 
     // ローカルでの視覚的フィードバック
     this.optionTargets.forEach((button) => {
-      // 常に正解の選択肢を緑色にする
+      // 常に正解の選択肢を強調する
       if (button.dataset.isCorrect === "true") {
-        button.style.backgroundColor = "rgba(16, 185, 129, 0.2)";
-        button.style.borderColor = "#10b981";
-        button.style.color = "#10b981";
+        button.classList.add("is-correct");
       }
     });
 
-    // 不正解を選んだ場合、そのボタンを赤色にする
+    // 不正解を選んだ場合、そのボタンを強調する
     if (!isCorrect) {
-      clickedButton.style.backgroundColor = "rgba(244, 63, 94, 0.2)";
-      clickedButton.style.borderColor = "#f43f5e";
-      clickedButton.style.color = "#f43f5e";
+      clickedButton.classList.add("is-incorrect");
     }
 
     // 解説を表示
-    this.explanationTarget.style.display = "block";
+    this.explanationTarget.classList.remove("hidden");
   }
 }

@@ -1,43 +1,66 @@
-<div class="auth-container">
-  <div class="auth-card" style="max-width: 800px;">
+<div class="max-w-4xl mx-auto">
+  <div class="glass p-6 md:p-10 rounded-3xl">
     <% is_official_drill = @post.user.email == 'system@example.com' %>
 
-    <% if is_official_drill %>
-    <h1 style="color: #10b981;">🔰 公式ドリル: <%= @post.title %></h1>
-    <% else %>
-    <h1><%= @post.title %></h1>
-    <% end %>
-
-    <% unless is_official_drill %>
-    <div class="code-block">
-      <pre><code><%= @post.content %></code></pre>
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div>
+        <% if is_official_drill %>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold mb-3">
+          <span class="animate-pulse">🔰</span> 公式ドリル
+        </div>
+        <h1 class="text-3xl md:text-4xl font-black text-white leading-tight"><%= @post.title %></h1>
+        <% else %>
+        <h1 class="text-3xl md:text-4xl font-black text-white leading-tight"><%= @post.title %></h1>
+        <% end %>
+      </div>
     </div>
 
-    <div class="form-field">
-      <p style="color: #94a3b8; font-size: 0.875rem;">
-        これまでに生成されたクイズ: <strong><%= @post.quizzes.count %></strong> 回
+    <% unless is_official_drill %>
+    <div class="relative group mb-8">
+      <div class="absolute -inset-1 bg-gradient-to-r from-primary to-blue-500 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
+      <div class="relative bg-slate-950 rounded-xl p-6 border border-white/5 font-mono text-sm overflow-x-auto leading-relaxed shadow-2xl">
+        <pre><code class="text-slate-300"><%= @post.content %></code></pre>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 mb-8">
+      <p class="text-slate-400 text-sm">
+        これまでに生成されたクイズ: <strong class="text-white text-lg ml-2"><%= @post.quizzes.count %></strong> <span class="text-xs">回</span>
       </p>
     </div>
 
-    <div class="form-actions" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-      <p style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 12px; text-align: center;">AIでこのコードからクイズを生成します：</p>
+    <div class="border-t border-white/5 pt-8 mb-8">
+      <p class="text-slate-400 text-sm mb-4 text-center">AIでこのコードからクイズを生成します：</p>
       <% if ['beginner@example.com', 'expert@example.com'].include?(current_user.email) %>
-      <p style="color: #10b981; font-size: 0.8rem; margin-bottom: 12px; text-align: center;">※ デモ用アカウントのため、正解が表示されます</p>
+      <p class="text-emerald-400 text-xs mb-4 text-center px-4 py-2 bg-emerald-500/10 rounded-lg inline-block w-full">※ デモ用アカウントのため、正解が表示されます</p>
       <% end %>
-      <%= button_to "AIで新しいクイズを作る", quizzes_path(post_id: @post.id), method: :post, class: "button primary", style: "width: 100%; box-sizing: border-box;", form: { data: { turbo: false } } %>
+      <%= button_to quizzes_path(post_id: @post.id), method: :post, class: "btn-primary w-full py-4 text-lg", form: { data: { turbo: false } } do %>
+      AIで新しいクイズを作る ✨
+      <% end %>
     </div>
     <% end %>
 
     <% if @post.quizzes.any? %>
-    <div class="form-field" style="<%= is_official_drill ? 'margin-top: 10px;' : 'margin-top: 30px; opacity: 0.8;' %>">
-      <h3 style="color: #38bdf8; font-size: 1.0rem; margin-bottom: 12px; border-bottom: 1px dashed rgba(56, 189, 248, 0.3); padding-bottom: 5px;"><%= is_official_drill ? '収録されている問題' : '過去に生成された問題' %></h3>
-      <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div class="space-y-4">
+      <h3 class="text-lg font-bold text-primary flex items-center gap-2 mb-4">
+        <%= is_official_drill ? '収録されている問題' : '過去に生成された問題' %>
+        <div class="h-px grow bg-primary/20"></div>
+      </h3>
+
+      <div class="grid grid-cols-1 gap-3">
         <% @post.quizzes.order(created_at: :asc).each_with_index do |quiz, index| %>
         <% is_solved = current_user.quiz_answers.where(quiz: quiz, correct: true).exists? %>
-        <%= link_to quiz_path(quiz), class: "button secondary", style: "width: 100%; text-align: left; border-color: rgba(56, 189, 248, 0.3); box-sizing: border-box; font-size: 0.9rem; padding: 12px; display: flex; justify-content: space-between; align-items: center;" do %>
-        <span>問題 #<%= index + 1 %> に挑戦する</span>
+        <%= link_to quiz_path(quiz), class: "group flex items-center justify-between p-4 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all" do %>
+        <div class="flex items-center gap-4">
+          <span class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 text-xs font-bold text-slate-400 group-hover:bg-primary group-hover:text-white transition-colors">
+            #<%= index + 1 %>
+          </span>
+          <span class="text-slate-200 font-medium group-hover:text-white transition-colors">問題に挑戦する</span>
+        </div>
         <% if is_solved %>
-        <span style="font-size: 0.75rem; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.3);">✅ 正解済み</span>
+        <span class="text-[10px] uppercase font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">✅ 正解済み</span>
+        <% else %>
+        <span class="text-slate-500 group-hover:translate-x-1 transition-transform">→</span>
         <% end %>
         <% end %>
         <% end %>
@@ -45,13 +68,13 @@
     </div>
     <% end %>
 
-    <div class="auth-links">
+    <div class="flex flex-col gap-4 mt-12 pt-8 border-t border-white/5">
       <% unless is_official_drill %>
-      <div style="margin-bottom: 20px;">
-        <%= link_to "🔰 公式ドリル一覧（APIエラー時など）", official_posts_path, class: "button secondary", style: "width: 100%; text-align: center; border-color: rgba(16, 185, 129, 0.5); color: #10b981; box-sizing: border-box;" %>
-      </div>
+      <%= link_to official_posts_path, class: "w-full py-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-emerald-400 text-sm font-bold text-center hover:bg-emerald-500/10 transition-all" do %>
+      🔰 公式ドリル一覧（APIエラー時など）
       <% end %>
-      <%= link_to '戻る', "javascript:history.back()" %>
+      <% end %>
+      <%= link_to '戻る', "javascript:history.back()", class: "text-center text-slate-500 hover:text-slate-300 text-sm transition-colors" %>
     </div>
   </div>
 </div>

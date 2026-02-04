@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe UserHelper, type: :helper do
+RSpec.describe UsersHelper, type: :helper do
   describe '#user_title' do
     subject { helper.user_title(user) }
 
