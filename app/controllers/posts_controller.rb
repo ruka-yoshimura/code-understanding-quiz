@@ -24,6 +24,18 @@ class PostsController < ApplicationController
     end
   end
 
+  def destroy
+    @post = current_user.posts.find(params[:id])
+
+    if current_user.demo_user?
+      redirect_to root_path, alert: 'デモユーザーはコードを削除できません。'
+      return
+    end
+
+    @post.destroy
+    redirect_to root_path, notice: 'コードを削除しました。'
+  end
+
   private
 
   def post_params

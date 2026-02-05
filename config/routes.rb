@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   end
   root 'home#index'
   resources :reviews, only: [:index]
-  resources :posts, only: %i[index show new create] do
+  resources :posts, only: %i[index show new create destroy] do
     collection do
       get :official
     end

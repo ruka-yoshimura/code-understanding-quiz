@@ -1,0 +1,106 @@
+require 'rails_helper'
+
+RSpec.describe 'PostDeletion', type: :request do
+  include Devise::Test::IntegrationHelpers
+
+  let(:user) { create(:user) }
+  let(:other_user) { create(:user) }
+  let!(:user_post) { create(:post, user: user) }
+  let!(:other_post) { create(:post, user: other_user) }
+  let!(:quiz) { create(:quiz, post: user_post) }
+
+  before { sign_in user }
+
+  describe 'DELETE /posts/:id' do
+    context '自分の投稿を削除する場合' do
+      it '投稿が削除され、関連するクイズも削除されること' do
+        expect do
+          delete post_path(user_post)
+        end.to change(Post, :count).by(-1).and change(Quiz, :count).by(-1)
+
+        expect(response).to redirect_to(root_path)
+        expect(flash[:notice]).to eq 'コードを削除しました。'
+      end
+    end
+
+    context '他人の投稿を削除しようとする場合' do
+      it '404エラー（RecordNotFound）が発生すること' do
+        sign_out user
+        sign_in other_user
+        delete post_path(user_post)
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+end
+
+RSpec.describe 'PostDeletionSystem', type: :system do
+  include Devise::Test::IntegrationHelpers
+
+  let(:user) { create(:user) }
+  let!(:post_record) { create(:post, user: user, title: '削除対象のコード') }
+
+  before do
+    driven_by(:selenium_chrome_headless)
+    sign_in user
+  end
+
+  it '詳細画面から投稿を削除できること' do
+    visit post_path(post_record)
+
+    accept_confirm do
+      click_button '投稿を削除'
+    end
+
+    expect(page).to have_content 'コードを削除しました。'
+    expect(page).not_to have_content '削除対象のコード'
+    expect(current_path).to eq root_path
+  end
+
+  it 'ホーム画面のカードから投稿を削除できること' do
+    # デバッグ: 投稿がユーザーに紐付いているか確認
+    expect(post_record.user).to eq user
+
+    visit root_path
+
+    # 正しいユーザーでログインできているか確認
+    expect(page).to have_content "こんにちは、#{user.display_name} さん"
+
+    # ページに対象の投稿が表示されるのを十分に待つ（非同期レンダリング対策）
+    expect(page).to have_selector("#delete-post-#{post_record.id}", visible: :all, wait: 10)
+
+    # 「削除対象のコード」の削除ボタンをクリック
+    accept_confirm do
+      find("#delete-post-#{post_record.id}", visible: :all, wait: 10).click
+    end
+
+    expect(page).to have_content 'コードを削除しました。'
+    expect(page).not_to have_content '削除対象のコード'
+  end
+
+  context 'デモユーザーの場合' do
+    let(:demo_user) { create(:user, email: 'beginner@example.com') }
+    let!(:demo_post) { create(:post, user: demo_user, title: 'デモ投稿') }
+
+    before do
+      sign_out user
+      sign_in demo_user
+    end
+
+    it '詳細画面に削除ボタンが表示されないこと' do
+      visit post_path(demo_post)
+      expect(page).not_to have_button '投稿を削除'
+    end
+
+    it 'ホーム画面に削除ボタンが表示されないこと' do
+      visit root_path
+      # ページに対象の投稿が表示されるのを十分に待つ
+      expect(page).to have_content 'デモ投稿'
+
+      # 削除ボタン（ゴミ箱）が存在しないことを確認
+      within('.glass', text: 'デモ投稿') do
+        expect(page).not_to have_selector('button[title="投稿を削除する"]')
+      end
+    end
+  end
+end

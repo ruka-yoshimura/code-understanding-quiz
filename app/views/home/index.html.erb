@@ -8,7 +8,7 @@
           <div>
             <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">こんにちは、<%= current_user.display_name %> さん</h2>
             <div class="flex items-center gap-2">
-              <span class="px-3 py-1 rounded-full text-xs font-bold ring-1 ring-white/10 <%= user_rank_class(current_user) %>" id="dashboard-user-title"><%= user_title(current_user) %></span>
+              <span class="px-3 py-1 rounded-full text-xs font-bold <%= user_rank_class(current_user) %>" id="dashboard-user-title"><%= user_title(current_user) %></span>
               <p class="text-slate-400 text-sm">あなたのコード理解を深め、レベルアップを目指しましょう！</p>
             </div>
           </div>
@@ -116,18 +116,34 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
   <% @posts.each do |post| %>
-  <div class="glass p-6 rounded-2xl flex flex-col hover:translate-y-[-4px] transition-all duration-300">
-    <h2 class="text-xl font-bold text-white mb-2 leading-tight">
-      <%= link_to post.title, post, class: "hover:text-primary transition-colors" %>
-    </h2>
-    <div class="flex items-center gap-3 text-xs text-slate-500 mb-4 font-medium">
-      <span>📅 <%= post.created_at.strftime("%Y/%m/%d") %></span>
-      <span class="w-1 h-1 bg-slate-700 rounded-full"></span>
-      <span>📝 <%= post.quizzes.count %> 問</span>
+  <div class="glass p-6 rounded-2xl flex flex-col hover:translate-y-[-4px] transition-all duration-300 group">
+    <div class="flex items-center justify-between mb-4">
+      <span class="text-[10px] uppercase font-bold text-slate-500 bg-white/5 border border-white/10 px-2 py-0.5 rounded">
+        � <%= post.quizzes.count %> 問
+      </span>
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] font-mono text-slate-600">
+          <%= post.created_at.strftime("%Y/%m/%d") %>
+        </span>
+        <% unless current_user.demo_user? %>
+        <%= button_to post_path(post), method: :delete, form: { data: { turbo_confirm: 'この投稿とすべてのクイズを削除しますか？' }, class: "inline" }, class: "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/5 bg-white/5 hover:bg-rose-500/10 hover:border-rose-500/30 text-slate-400 hover:text-rose-400 transition-all", title: "投稿を削除する", id: "delete-post-#{post.id}" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+        <span class="text-xs font-bold">削除</span>
+        <% end %>
+        <% end %>
+      </div>
     </div>
-    <p class="text-slate-400 text-sm mb-6 line-clamp-3 leading-relaxed">
+
+    <h2 class="text-xl font-bold text-white mb-2 leading-tight group-hover:text-primary transition-colors line-clamp-1">
+      <%= link_to post.title, post %>
+    </h2>
+
+    <p class="text-slate-400 text-sm mb-6 line-clamp-3 leading-relaxed font-mono break-all">
       <%= post.content %>
     </p>
+
     <div class="mt-auto">
       <%= link_to post, class: "flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 text-sm font-bold transition-all" do %>
       <span>クイズに挑戦する</span>

@@ -26,6 +26,20 @@ RSpec.describe User, type: :model do
       user = build(:user, email: 'test@example.com')
       expect(user).not_to be_valid
     end
+
+    describe '名前の自動生成' do
+      it '名前が空の場合、メールアドレス（@より前）から自動生成されること' do
+        user = build(:user, name: nil, email: 'test_user@example.com')
+        user.valid? # バリデーションを実行（before_validationをトリガー）
+        expect(user.name).to eq 'test_user'
+      end
+
+      it '名前が入力されている場合は、その値が維持されること' do
+        user = build(:user, name: 'Custom Name', email: 'test_user@example.com')
+        user.valid?
+        expect(user.name).to eq 'Custom Name'
+      end
+    end
   end
 
   describe 'メソッドの検証' do

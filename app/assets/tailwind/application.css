@@ -56,35 +56,6 @@
     @apply block text-sm font-bold text-slate-400 mb-2;
   }
 
-  /* ランクバッジの統合 */
-  .rank-badge {
-    @apply inline-block font-extrabold uppercase tracking-widest px-4 py-1.5 rounded-full text-[10px] shadow-lg border-2;
-  }
-
-  .rank-beginner {
-    @apply bg-slate-500/20 text-slate-400 border-slate-500/30 shadow-slate-500/10;
-  }
-
-  .rank-apprentice {
-    @apply bg-emerald-500/20 text-emerald-400 border-emerald-500/30 shadow-emerald-500/10;
-  }
-
-  .rank-explorer {
-    @apply bg-blue-500/20 text-blue-400 border-blue-500/30 shadow-blue-500/10;
-  }
-
-  .rank-specialist {
-    @apply bg-purple-500/20 text-purple-400 border-purple-500/30 shadow-purple-500/10;
-  }
-
-  .rank-master {
-    @apply bg-rose-500/20 text-rose-400 border-rose-500/30 shadow-rose-500/10;
-  }
-
-  .rank-legend {
-    @apply bg-amber-500/20 text-amber-400 border-amber-500/30 shadow-amber-500/10 animate-pulse;
-  }
-
   /* フラッシュメッセージの統合 */
   .flash-message {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 p-4 rounded-xl font-bold border-2;

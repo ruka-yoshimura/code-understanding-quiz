@@ -5,7 +5,7 @@ class QuizzesController < ApplicationController
 
   def index
     # ユーザーが投稿したコードから生成されたクイズ一覧
-    @quizzes = Quiz.joins(:post).where(posts: { user_id: current_user.id }).order(created_at: :desc)
+    @quizzes = Quiz.includes(:post).where(posts: { user_id: current_user.id }).order(created_at: :desc)
     # 正解済みのクイズIDを取得して、ビューでの判定に使用
     @solved_quiz_ids = current_user.quiz_answers.where(correct: true).pluck(:quiz_id)
     # 不正解（要復習）のクイズIDを取得
