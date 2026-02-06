@@ -7,8 +7,8 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
             <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">こんにちは、<%= current_user.display_name %> さん</h2>
-            <div class="flex items-center gap-2">
-              <span class="px-3 py-1 rounded-full text-xs font-bold <%= user_rank_class(current_user) %>" id="dashboard-user-title"><%= user_title(current_user) %></span>
+            <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+              <span class="<%= user_rank_class(current_user) %>" id="dashboard-user-title"><%= user_title(current_user) %></span>
               <p class="text-slate-400 text-sm">あなたのコード理解を深め、レベルアップを目指しましょう！</p>
             </div>
           </div>
@@ -20,8 +20,8 @@
             <div class="text-3xl font-black text-white"><%= current_user.level %></div>
           </div>
           <div class="bg-white/5 p-4 rounded-xl border border-white/5">
-            <div class="text-slate-400 text-xs mb-1 uppercase tracking-wider font-semibold">現在のXP</div>
-            <div class="text-3xl font-black text-primary" id="dashboard-user-xp"><%= current_user.xp %></div>
+            <div class="text-slate-400 text-xs mb-1 uppercase tracking-wider font-semibold">通算XP</div>
+            <div class="text-3xl font-black text-primary" id="dashboard-user-xp"><%= current_user.total_xp %></div>
           </div>
           <div class="bg-white/5 p-4 rounded-xl border border-white/5 col-span-2 md:col-span-1">
             <div class="text-slate-400 text-xs mb-1 uppercase tracking-wider font-semibold">連続回答</div>
@@ -32,7 +32,10 @@
         <div class="bg-white/5 p-6 rounded-xl border border-white/5" id="user-xp-section">
           <div class="flex justify-between items-end mb-3">
             <span class="text-sm font-semibold text-slate-300">次のレベルまで</span>
-            <span class="text-xs font-mono text-slate-400" id="dashboard-user-xp-percentage-text"><%= current_user.xp %> / <%= current_user.required_xp_for_next_level %> XP</span>
+            <div class="text-right flex flex-col items-end" id="dashboard-user-xp-percentage-text">
+              <span class="text-xs font-mono text-slate-400">あと <strong class="text-white text-sm"><%= current_user.xp_until_next_level %></strong> XP</span>
+              <span class="text-[10px] font-mono text-slate-400">(<%= current_user.xp %> / <%= current_user.required_xp_for_next_level %> XP)</span>
+            </div>
           </div>
           <div class="h-3 bg-slate-800 rounded-full overflow-hidden border border-white/5 shadow-inner">
             <div class="h-full bg-gradient-to-r from-primary to-blue-500 rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(56,189,248,0.5)]" id="dashboard-user-xp-progress-fill" style="width: <%= current_user.xp_progress_percentage %>%"></div>
@@ -90,7 +93,7 @@
 <%# デモレベル切り替えパネル（デモユーザーのみ表示） %>
 <% if ['beginner@example.com', 'expert@example.com'].include?(current_user.email) %>
 <section class="mb-12 p-6 rounded-2xl border-2 border-dashed border-white/10 bg-white/5">
-  <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+  <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
     <div class="flex items-center gap-4">
       <div class="w-12 h-12 flex items-center justify-center bg-slate-800 rounded-xl text-2xl shadow-inner">🧪</div>
       <div>
@@ -98,9 +101,9 @@
         <p class="text-sm text-slate-400">レビュー用にユーザーの状態を即座に切り替えられます</p>
       </div>
     </div>
-    <div class="flex gap-3 w-full md:w-auto">
-      <%= link_to "初級レベル (Lv.1)", users_demo_sign_in_path(level: 1), data: { "turbo-method": :post }, class: "flex-1 md:flex-none px-4 py-2 rounded-lg border border-accent/30 text-accent font-bold hover:bg-accent/10 transition-colors text-center text-sm" %>
-      <%= link_to "上級レベル (Lv.49)", users_demo_sign_in_path(level: 49), data: { "turbo-method": :post }, class: "flex-1 md:flex-none px-4 py-2 rounded-lg border border-orange-500/30 text-orange-500 font-bold hover:bg-orange-500/10 transition-colors text-center text-sm" %>
+    <div class="flex flex-wrap gap-3 w-full lg:w-auto">
+      <%= link_to "初級レベル (Lv.1)", users_demo_sign_in_path(level: 1), data: { "turbo-method": :post }, class: "flex-1 lg:flex-none px-4 py-2 rounded-lg border border-accent/30 text-accent font-bold hover:bg-accent/10 transition-colors text-center text-sm" %>
+      <%= link_to "上級レベル (Lv.49)", users_demo_sign_in_path(level: 49), data: { "turbo-method": :post }, class: "flex-1 lg:flex-none px-4 py-2 rounded-lg border border-orange-500/30 text-orange-500 font-bold hover:bg-orange-500/10 transition-colors text-center text-sm" %>
     </div>
   </div>
 </section>
@@ -122,7 +125,7 @@
         � <%= post.quizzes.count %> 問
       </span>
       <div class="flex items-center gap-2">
-        <span class="text-[10px] font-mono text-slate-600">
+        <span class="text-[10px] font-mono text-slate-400">
           <%= post.created_at.strftime("%Y/%m/%d") %>
         </span>
         <% unless current_user.demo_user? %>
@@ -162,24 +165,26 @@
   </div>
 
   <div class="relative z-10 text-center max-w-3xl px-4">
-    <h1 class="text-5xl md:text-7xl font-black text-white mb-8 tracking-tighter">
-      Code <span class="text-primary italic">Understanding</span> Quiz
+    <h1 class="font-black text-white mb-6 md:mb-10 tracking-tighter leading-[0.85] flex flex-col items-center md:block">
+      <span class="text-3xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl block md:inline">Code</span>
+      <span class="text-primary italic text-3xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl block md:inline">Understanding</span>
+      <span class="text-3xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl block md:inline">Quiz</span>
     </h1>
-    <p class="text-lg md:text-xl text-slate-400 mb-12 leading-relaxed">
+    <p class="text-sm md:text-xl text-slate-400 mb-8 md:mb-12 leading-relaxed">
       AIがあなたのコードからクイズを自動生成。<br class="hidden md:block">
       コードを深く理解し、レベルアップを目指しましょう !
     </p>
 
-    <div class="flex flex-col items-center gap-6">
+    <div class="flex flex-col items-center gap-4 md:gap-6">
       <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md">
-        <%= link_to "新規登録", new_user_registration_path, class: "btn-primary py-4 text-center grow" %>
-        <%= link_to "ログイン", new_user_session_path, class: "btn-secondary py-4 text-center grow" %>
+        <%= link_to "新規登録", new_user_registration_path, class: "btn-primary py-3.5 md:py-4 text-center grow" %>
+        <%= link_to "ログイン", new_user_session_path, class: "btn-secondary py-3.5 md:py-4 text-center grow" %>
       </div>
 
-      <div class="w-full max-w-md p-10 rounded-3xl glass relative group text-center">
+      <div class="w-full max-w-md p-5 md:p-10 rounded-3xl glass relative group text-center">
         <div class="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-primary to-transparent"></div>
-        <p class="text-slate-500 text-sm mb-6">デモ用です。サンプルデータが入っています。</p>
-        <%= link_to users_guest_sign_in_path, data: { "turbo-method": :post }, class: "btn-primary w-full py-5 text-xl relative overflow-hidden group shadow-[0_0_40px_rgba(14,165,233,0.3)]" do %>
+        <p class="text-slate-500 text-xs md:text-sm mb-4 md:mb-6">デモ用です。サンプルデータが入っています。</p>
+        <%= link_to users_guest_sign_in_path, data: { "turbo-method": :post }, class: "btn-primary w-full py-4 md:py-5 text-base md:text-xl relative overflow-hidden group shadow-[0_0_40px_rgba(14,165,233,0.3)]" do %>
         <span class="relative z-10 text-slate-950">ゲストログインで体験する</span>
         <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
         <% end %>

@@ -43,7 +43,7 @@ RSpec.describe User, type: :model do
   end
 
   describe 'メソッドの検証' do
-    describe 'Nil安全性（堅牢性）の検証' do
+    describe '空の値に対する安全性（堅牢性）の検証' do
       let(:user) { create(:user) }
       let(:quiz) { create(:quiz) }
 
@@ -71,7 +71,7 @@ RSpec.describe User, type: :model do
       end
     end
 
-    describe '#cleanup_demo_data!' do
+    describe 'デモデータのクリーンアップ' do
       context 'デモユーザーの場合' do
         let(:demo_user) { described_class.find_or_create_by!(email: 'beginner@example.com') { |u| u.password = 'password' } }
         let(:quiz) { create(:quiz) }
@@ -115,7 +115,7 @@ RSpec.describe User, type: :model do
       end
     end
 
-    describe '#demo_user?' do
+    describe 'デモユーザー判定' do
       it 'デモユーザーの場合trueを返すこと' do
         demo = described_class.find_or_create_by!(email: 'beginner@example.com') { |u| u.password = 'password' }
         expect(demo.demo_user?).to be true
@@ -127,7 +127,7 @@ RSpec.describe User, type: :model do
       end
     end
 
-    describe '#update_streak!' do
+    describe 'ストリーク（継続日数）の更新' do
       let(:user) { create(:user, daily_streak: 1, last_answered_date: Date.yesterday) }
 
       it '昨日回答していればストリークがインクリメントされること' do
@@ -149,7 +149,7 @@ RSpec.describe User, type: :model do
       end
     end
 
-    describe '#gain_xp' do
+    describe '経験値の獲得' do
       let(:user) { create(:user, level: 1, xp: 0) }
 
       it '経験値が正しく加算されること' do
@@ -171,11 +171,57 @@ RSpec.describe User, type: :model do
       end
     end
 
-    describe '#answer_quiz' do
+    describe '通算XPの計算' do
+      it '各レベルでの通算XPを正しく計算すること' do
+        user = build(:user, level: 1, xp: 20)
+        expect(user.total_xp).to eq 20 # 25*1*0 + 20
+
+        user = build(:user, level: 2, xp: 30)
+        expect(user.total_xp).to eq 80 # 25*2*1 + 30 = 50 + 30
+
+        user = build(:user, level: 50, xp: 0)
+        expect(user.total_xp).to eq 61_250 # 25*50*49
+
+        user = build(:user, level: 51, xp: 100)
+        expect(user.total_xp).to eq 63_850 # 61250 + 2500 + 100
+      end
+    end
+
+    describe '次レベルまでの不足XP' do
+      it '次のレベルまでの残りXPを正しく計算すること' do
+        user = build(:user, level: 1, xp: 20)
+        # Lv.1 -> Lv.2 は 50 XP 必要なので 50 - 20 = 30
+        expect(user.xp_until_next_level).to eq 30
+      end
+
+      it 'レベル50以降でも、残りXPを計算すること（必要量は2500固定）' do
+        user = build(:user, level: 60, xp: 500)
+        # 2500 - 500 = 2000
+        expect(user.xp_until_next_level).to eq 2000
+      end
+
+      it '真のレベル上限(999)に達している場合は0を返すこと' do
+        user = build(:user, level: 999, xp: 0)
+        # MAX_LEVEL に達したら gain_xp 側で加算されなくなるが、メソッドとしては 0 を期待
+        user.xp = 5000
+        expect(user.xp_until_next_level).to eq 0
+      end
+    end
+
+    describe '次レベルに必要なXP' do
+      it 'レベル50以降は一律2500を返すこと' do
+        user = build(:user, level: 50)
+        expect(user.required_xp_for_next_level).to eq 2500
+        user.level = 100
+        expect(user.required_xp_for_next_level).to eq 2500
+      end
+    end
+
+    describe 'クイズ回答と経験値計算' do
       let(:user) { create(:user) }
       let(:quiz) { create(:quiz) }
 
-      context '初めて正解する場合' do
+      context '初めてクイズに正解する場合' do
         it '通常経験値(10) + ボーナス(5) = 15 XP が付与されること' do
           result = user.answer_quiz(quiz, true)
           expect(result[:xp_gained]).to eq 15
@@ -196,7 +242,7 @@ RSpec.describe User, type: :model do
         end
       end
 
-      context 'コンボボーナスの検証' do
+      describe 'コンボボーナスの判定' do
         it '正解するとコンボカウントが増えること' do
           user.update(current_streak: 0)
           user.answer_quiz(quiz, true)
@@ -222,7 +268,7 @@ RSpec.describe User, type: :model do
         end
       end
 
-      context 'ペナルティの検証' do
+      describe 'ペナルティの判定' do
         before { user.gain_xp(50) } # テスト用に経験値を付与しておく
 
         it '不正解だと不正解カウントが増えること' do
@@ -253,7 +299,7 @@ RSpec.describe User, type: :model do
         end
       end
 
-      context 'ストリークボーナスの検証' do
+      describe 'ストリークボーナスの判定' do
         it '継続1日目( streak < 2 )なら倍率は1.0であること' do
           user.update(daily_streak: 1)
           result = user.answer_quiz(quiz, true)
@@ -301,21 +347,69 @@ RSpec.describe User, type: :model do
       end
     end
 
-    describe '#gain_xp (Level Cap)' do
-      let(:user) { create(:user, level: 49, xp: 0) }
+    describe 'レベル上限の検証' do
+      let(:user) { create(:user, level: 998, xp: 0) }
 
-      it 'レベル50までは正常にレベルアップすること' do
-        # Lv.49 -> Lv.50 には 49 * 50 = 2450 XP 必要
-        user.gain_xp(2450)
-        expect(user.level).to eq 50
+      it 'レベル999までは正常にレベルアップすること' do
+        # Lv.998 -> Lv.999 には 50 * 50 = 2500 XP 必要 (レベル50以降固定のため)
+        user.gain_xp(2500)
+        expect(user.level).to eq 999
         expect(user.xp).to eq 0
       end
 
-      it 'レベル50に達した後は経験値が増えてもレベルが上がらないこと' do
-        user.update(level: 50, xp: 0)
+      it 'レベル999に達した後は経験値が増えてもレベルが上がらないこと' do
+        user.update(level: 999, xp: 0)
         user.gain_xp(3000)
-        expect(user.level).to eq 50
+        expect(user.level).to eq 999
         expect(user.xp).to eq 3000
+      end
+    end
+
+    describe 'クイズ生成制限の検証' do
+      let(:user) { create(:user) }
+
+      describe 'クイズ生成可否の判定' do
+        it '通常はtrueを返すこと' do
+          expect(user.can_generate_quiz?).to be true
+        end
+
+        it '上限（20回）に達するとfalseを返すこと' do
+          user.update!(daily_quiz_generation_count: 20, last_quiz_generated_at: Time.current)
+          expect(user.can_generate_quiz?).to be false
+        end
+
+        it '日付が変わると回数がリセットされtrueを返すこと' do
+          user.update!(daily_quiz_generation_count: 20, last_quiz_generated_at: 1.day.ago)
+          expect(user.can_generate_quiz?).to be true
+          expect(user.daily_quiz_generation_count).to eq 0
+        end
+      end
+
+      describe '残り生成可能回数' do
+        it '残りの回数を正しく返すこと' do
+          user.update!(daily_quiz_generation_count: 5, last_quiz_generated_at: Time.current)
+          expect(user.remaining_quiz_generations).to eq 15
+        end
+
+        it '日付が変わるとリセットされた後の残り数を返すこと' do
+          user.update!(daily_quiz_generation_count: 20, last_quiz_generated_at: 1.day.ago)
+          expect(user.remaining_quiz_generations).to eq 20
+        end
+      end
+
+      describe '生成回数の加算' do
+        it '生成回数がインクリメントされ、時刻が更新されること' do
+          expect do
+            user.increment_quiz_generation_count!
+          end.to change(user, :daily_quiz_generation_count).by(1)
+          expect(user.last_quiz_generated_at).to be_within(1.second).of(Time.current)
+        end
+
+        it 'リセットが必要な場合はリセットしてからインクリメントすること' do
+          user.update!(daily_quiz_generation_count: 20, last_quiz_generated_at: 1.day.ago)
+          user.increment_quiz_generation_count!
+          expect(user.daily_quiz_generation_count).to eq 1
+        end
       end
     end
   end

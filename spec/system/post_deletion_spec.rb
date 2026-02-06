@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'PostDeletion', type: :request do
+RSpec.describe '投稿の削除機能（リクエスト検証）', type: :request do
   include Devise::Test::IntegrationHelpers
 
   let(:user) { create(:user) }
@@ -11,7 +11,7 @@ RSpec.describe 'PostDeletion', type: :request do
 
   before { sign_in user }
 
-  describe 'DELETE /posts/:id' do
+  describe '投稿削除のリクエスト' do
     context '自分の投稿を削除する場合' do
       it '投稿が削除され、関連するクイズも削除されること' do
         expect do
@@ -34,7 +34,7 @@ RSpec.describe 'PostDeletion', type: :request do
   end
 end
 
-RSpec.describe 'PostDeletionSystem', type: :system do
+RSpec.describe '投稿の削除機能（ブラウザ操作検証）', type: :system do
   include Devise::Test::IntegrationHelpers
 
   let(:user) { create(:user) }

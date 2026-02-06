@@ -6,7 +6,7 @@
       <div>
         <% if is_official_drill %>
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold mb-3">
-          <span class="animate-pulse">🔰</span> 公式ドリル
+          <span>🔰</span> 公式ドリル
         </div>
         <h1 class="text-3xl md:text-4xl font-black text-white leading-tight"><%= @post.title %></h1>
         <% else %>
@@ -41,6 +41,15 @@
       <% if ['beginner@example.com', 'expert@example.com'].include?(current_user.email) %>
       <p class="text-emerald-400 text-xs mb-4 text-center px-4 py-2 bg-emerald-500/10 rounded-lg inline-block w-full">※ デモ用アカウントのため、正解が表示されます</p>
       <% end %>
+
+      <div class="flex items-center justify-center gap-2 mb-4">
+        <span class="text-xs text-slate-400">本日の残り生成枠:</span>
+        <% remaining = current_user.remaining_quiz_generations %>
+        <span class="px-2 py-0.5 rounded-md text-xs font-bold <%= remaining > 0 ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20' %>">
+          あと <%= remaining %> 回
+        </span>
+      </div>
+
       <%= button_to quizzes_path(post_id: @post.id), method: :post, class: "btn-primary w-full py-4 text-lg", form: { data: { turbo: false } } do %>
       AIで新しいクイズを作る ✨
       <% end %>

@@ -26,7 +26,47 @@ class User < ApplicationRecord
   # 連続不正解の閾値
   PENALTY_THRESHOLD = 3
   # レベル上限
-  MAX_LEVEL = 50
+  MAX_LEVEL = 999
+  # 1日のクイズ生成上限
+  DAILY_QUIZ_LIMIT = 20
+
+  # クイズを生成可能か判定（1日20回制限）
+  def can_generate_quiz?
+    reset_daily_generation_count_if_needed
+    daily_quiz_generation_count < DAILY_QUIZ_LIMIT
+  end
+
+  # 本日の残り生成可能回数
+  def remaining_quiz_generations
+    reset_daily_generation_count_if_needed
+    [DAILY_QUIZ_LIMIT - daily_quiz_generation_count, 0].max
+  end
+
+  # 通算獲得XP
+  def total_xp
+    if level <= 50
+      # 各レベル L (<= 50) の昇格に必要なXPは 50 * L
+      # レベル L までの累積XP = 25 * L * (L-1)
+      (25 * level * (level - 1)) + xp.to_i
+    else
+      # レベル 50 までの累積 = 25 * 50 * 49 = 61250
+      # それ以降は 1レベルあたり 2500 固定
+      61_250 + ((level - 50) * 2500) + xp.to_i
+    end
+  end
+
+  # 次のレベルまでの残りXP
+  def xp_until_next_level
+    [required_xp_for_next_level - xp.to_i, 0].max
+  end
+
+  # クイズ生成回数をインクリメント
+  def increment_quiz_generation_count!
+    reset_daily_generation_count_if_needed
+    self.daily_quiz_generation_count += 1
+    self.last_quiz_generated_at = Time.current
+    save!
+  end
 
   # クイズに回答し、結果に基づいて経験値やストリークを更新する
   def answer_quiz(quiz, is_correct)
@@ -139,6 +179,8 @@ class User < ApplicationRecord
   def required_xp_for_next_level
     level_val = level.to_i
     level_val = 1 if level_val < 1
+    # レベル 50 以降は 2500 XP で固定
+    level_val = 50 if level_val > 50
     level_val * 50
   end
 
@@ -219,6 +261,15 @@ class User < ApplicationRecord
   end
 
   private
+
+  def reset_daily_generation_count_if_needed
+    return if last_quiz_generated_at.blank?
+
+    # 最後に生成した日が今日でないならリセット
+    return unless last_quiz_generated_at.to_date < Time.current.to_date
+
+    self.daily_quiz_generation_count = 0
+  end
 
   def set_default_name
     self.name = email.split('@').first if name.blank? && email.present?

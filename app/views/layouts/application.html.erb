@@ -17,23 +17,27 @@
 </head>
 
 <header class="sticky top-0 z-50 glass border-b border-white/5 px-4 md:px-8 py-3">
-  <nav class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+  <nav class="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center gap-4">
     <%= link_to "Code Understanding Quiz", root_path, class: "text-xl md:text-2xl font-black text-primary hover:opacity-80 transition-opacity tracking-tight" %>
 
-    <div class="flex flex-wrap items-center justify-center gap-3">
+    <div class="flex flex-col lg:flex-row items-center gap-4 w-full lg:w-auto">
       <% if user_signed_in? %>
-      <div class="flex items-center gap-3 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-sm font-medium">
-        <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold <%= user_rank_class(current_user) %>"><%= user_title(current_user) %></span>
+      <div class="flex items-center gap-3 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-sm font-medium w-full lg:w-auto justify-center">
+        <span class="<%= user_rank_class(current_user) %>"><%= user_title(current_user) %></span>
         <span class="text-slate-300">Lv.<span id="user-level"><%= current_user.level %></span></span>
-        <span class="text-primary"><span id="user-xp"><%= current_user.xp %></span> XP</span>
+        <span class="text-primary"><span id="user-xp"><%= current_user.total_xp %></span> XP</span>
       </div>
-      <%= link_to "ホーム", root_path, class: "text-sm text-slate-400 hover:text-white transition-colors" %>
-      <%= link_to "マイページ", edit_user_registration_path, class: "text-sm text-slate-400 hover:text-white transition-colors" %>
-      <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "text-sm text-rose-400 hover:text-rose-300 transition-colors bg-transparent border-none p-0 cursor-pointer" %>
+      <div class="flex items-center justify-center gap-4 w-full lg:w-auto">
+        <%= link_to "ホーム", root_path, class: "text-sm text-slate-400 hover:text-white transition-colors" %>
+        <%= link_to "マイページ", edit_user_registration_path, class: "text-sm text-slate-400 hover:text-white transition-colors" %>
+        <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "text-sm text-rose-400 hover:text-rose-300 transition-colors bg-transparent border-none p-0 cursor-pointer" %>
+      </div>
       <% else %>
-      <%= link_to "ホーム", root_path, class: "text-sm text-slate-400 hover:text-white transition-colors" %>
-      <%= link_to "ログイン", new_user_session_path, class: "text-sm text-slate-400 hover:text-white transition-colors" %>
-      <%= link_to "新規登録", new_user_registration_path, class: "btn-primary text-xs py-1.5 px-4" %>
+      <div class="flex flex-wrap items-center justify-center gap-3 w-full lg:w-auto">
+        <%= link_to "ホーム", root_path, class: "text-sm text-slate-400 hover:text-white transition-colors" %>
+        <%= link_to "ログイン", new_user_session_path, class: "text-sm text-slate-400 hover:text-white transition-colors" %>
+        <%= link_to "新規登録", new_user_registration_path, class: "btn-primary text-xs py-1.5 px-4" %>
+      </div>
       <% end %>
     </div>
   </nav>

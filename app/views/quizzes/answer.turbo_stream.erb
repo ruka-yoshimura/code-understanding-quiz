@@ -9,12 +9,15 @@
   <%= turbo_stream.update "user-level", current_user.level %>
   <%= turbo_stream.update "dashboard-user-level", current_user.level %>
 
-  <%= turbo_stream.update "user-xp", current_user.xp %>
-  <%= turbo_stream.update "dashboard-user-xp", current_user.xp %>
+  <%= turbo_stream.update "user-xp", current_user.total_xp %>
+  <%= turbo_stream.update "dashboard-user-xp", current_user.total_xp %>
 
   <%# プログレスバーの更新 %>
   <% xp_progress = current_user.xp_progress_percentage %>
-  <%= turbo_stream.update "dashboard-user-xp-percentage-text", "#{current_user.xp} / #{current_user.required_xp_for_next_level} XP" %>
+  <%= turbo_stream.update "dashboard-user-xp-percentage-text" do %>
+    <span class="text-xs font-mono text-slate-400">あと <strong class="text-white text-sm"><%= current_user.xp_until_next_level %></strong> XP</span>
+    <span class="text-[10px] font-mono text-slate-400">(<%= current_user.xp %> / <%= current_user.required_xp_for_next_level %> XP)</span>
+  <% end %>
   <%= turbo_stream.replace "dashboard-user-xp-progress-fill" do %>
     <div class="xp-progress-fill" id="dashboard-user-xp-progress-fill" style="width: <%= xp_progress %>%"></div>
   <% end %>
