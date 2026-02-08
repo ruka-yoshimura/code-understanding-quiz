@@ -9,138 +9,48 @@ class User < ApplicationRecord
   has_many :posts, dependent: :destroy
   has_many :quiz_answers, dependent: :destroy
 
-  # 1回の正解で獲得できる経験値
-  XP_PER_CORRECT_ANSWER = 10
-  # 初見正解ボーナス
-  FIRST_ATTEMPT_BONUS = 5
-  # 3連続正解ボーナス
-  COMBO_BONUS = 20
-  # 連続正解の目標数
-  COMBO_THRESHOLD = 3
-  # 3連続不正解ペナルティ
-  PENALTY_AMOUNT = 10
-  # 連続不正解の閾値
-  PENALTY_THRESHOLD = 3
+  before_validation :set_default_name, on: :create
+
+  validates :name, length: { maximum: 50 }
+
+  include Experienceable
+
   # レベル上限
-  MAX_LEVEL = 50
+  MAX_LEVEL = 999
+  # 1日のクイズ生成上限
+  DAILY_QUIZ_LIMIT = 20
 
-  # クイズに回答し、結果に基づいて経験値やストリークを更新する
-  def answer_quiz(quiz, is_correct)
-    # 過去に回答したことがあるか確認（ボーナス判定用）
-    has_answered_before = quiz_answers.exists?(quiz: quiz)
-    old_level = level
+  # クイズを生成可能か判定（1日20回制限）
+  def can_generate_quiz?
+    reset_daily_generation_count_if_needed
+    daily_quiz_generation_count < DAILY_QUIZ_LIMIT
+  end
 
-    # 回答履歴を保存
-    quiz_answers.create!(quiz: quiz, correct: is_correct)
+  # 本日の残り生成可能回数
+  def remaining_quiz_generations
+    reset_daily_generation_count_if_needed
+    [DAILY_QUIZ_LIMIT - daily_quiz_generation_count, 0].max
+  end
 
-    result = {
-      xp_gained: 0,
-      bonus_applied: false,
-      combo_bonus: false,
-      penalty_applied: false,
-      level_up: false,
-      old_level: old_level,
-      new_level: old_level,
-      streak_multiplier: 1.0,
-      daily_streak: daily_streak
+  # クイズ生成回数をインクリメント
+  def increment_quiz_generation_count!
+    reset_daily_generation_count_if_needed
+    self.daily_quiz_generation_count += 1
+    self.last_quiz_generated_at = Time.current
+    save!
+  end
+
+  # ユーザーの学習統計を取得
+  def learning_stats
+    total = quiz_answers.count
+    return { total_answers: 0, weak_count: 0, correct_rate: 0 } if total.zero?
+
+    incorrect_count = quiz_answers.where(correct: false).count
+    {
+      total_answers: total,
+      weak_count: weak_quizzes.count,
+      correct_rate: (((total - incorrect_count).to_f / total) * 100).round
     }
-
-    if is_correct
-      # 正解の場合
-      # 基本経験値
-      total_xp = XP_PER_CORRECT_ANSWER
-
-      # 初見正解ボーナス
-      unless has_answered_before
-        total_xp += FIRST_ATTEMPT_BONUS
-        result[:bonus_applied] = true
-      end
-
-      # コンボ処理
-      self.current_streak = current_streak.to_i + 1
-      self.incorrect_streak = 0 # 不正解ストリークはリセット
-
-      if current_streak >= COMBO_THRESHOLD
-        total_xp += COMBO_BONUS
-        result[:combo_bonus] = true
-        self.current_streak = 0 # ボーナス付与後にリセット
-      end
-
-      # ストリークボーナス倍率の適用
-      multiplier = streak_multiplier
-      if multiplier > 1.0
-        total_xp = (total_xp * multiplier).round
-        result[:streak_multiplier] = multiplier
-      end
-
-      gain_xp(total_xp)
-      update_streak!
-
-      result[:xp_gained] = total_xp
-      result[:new_level] = level
-      result[:level_up] = true if level > old_level
-      result[:daily_streak] = daily_streak
-    else
-      # 不正解の場合
-      self.current_streak = 0 # 正解ストリークはリセット (コンボ終了)
-      self.incorrect_streak = incorrect_streak.to_i + 1
-
-      if incorrect_streak >= PENALTY_THRESHOLD
-        lose_xp(PENALTY_AMOUNT)
-        result[:penalty_applied] = true
-        self.incorrect_streak = 0 # ペナルティ適用後にリセット
-      end
-
-      save!
-    end
-
-    result
-  end
-
-  # 現在の継続日数に基づくXP獲得倍率を計算
-  # 1日目: 1.0倍, 2日目: 1.1倍, ... 6日目以降: 1.5倍（上限）
-  def streak_multiplier
-    ds = daily_streak.to_i
-    return 1.0 if ds < 2
-
-    # 2日目なら daily_streak=2 -> bonus 0.1
-    # bonus = (daily_streak - 1) * 0.1
-    bonus = (ds - 1) * 0.1
-
-    # 最大 0.5 (合計 1.5倍) まで
-    [1.0 + bonus, 1.5].min.round(1)
-  end
-
-  # 経験値を獲得し、必要ならレベルアップする
-  def gain_xp(amount)
-    self.xp = xp.to_i + amount
-
-    # レベルアップ判定（ループで複数レベルアップにも対応）
-    # レベル上限(50)に達している場合はレベルアップしない
-    while level < MAX_LEVEL && xp >= required_xp_for_next_level
-      self.xp -= required_xp_for_next_level
-      self.level += 1
-    end
-
-    save!
-  end
-
-  # 経験値を減らす（ただし0未満にはならない、レベルダウンもしない）
-  def lose_xp(amount)
-    self.xp = [xp.to_i - amount, 0].max
-    save!
-  end
-
-  # 次のレベルまでの必要経験値を計算
-  def required_xp_for_next_level
-    level_val = level.to_i
-    level_val = 1 if level_val < 1
-    level_val * 50
-  end
-
-  # 現在のレベルでの進捗率（パーセント）を計算
-  def xp_progress_percentage
-    [(xp.to_i.to_f / required_xp_for_next_level * 100).round, 100].min
   end
 
   # ユーザーが間違えたことのあるクイズを取得
@@ -154,29 +64,60 @@ class User < ApplicationRecord
     Quiz.where(id: review_ids).order(created_at: :desc)
   end
 
-  # 回答時に継続日数を更新する
-  def update_streak!
-    today = Time.current.to_date
+  # デモユーザーを初期状態にリセット
+  def cleanup_demo_data!
+    initial_state = case email
+                    when 'beginner@example.com'
+                      { level: 1, xp: 40, daily_streak: 1, last_answered_date: Time.zone.today }
+                    when 'expert@example.com'
+                      { level: 49, xp: 2440, daily_streak: 15, last_answered_date: Time.zone.today }
+                    else
+                      return
+                    end
 
-    if last_answered_date == today
-      # 今日すでに回答済みなら何もしない
-    elsif last_answered_date == today - 1
-      # 昨日回答していれば継続
-      self.daily_streak = daily_streak.to_i + 1
-    else
-      # 1日以上空いていればリセット
-      self.daily_streak = 1
-    end
+    # ステータスと名前をリセット
+    update!(
+      name: nil,
+      level: initial_state[:level],
+      xp: initial_state[:xp],
+      daily_streak: initial_state[:daily_streak],
+      current_streak: 0,
+      incorrect_streak: 0,
+      last_answered_date: initial_state[:last_answered_date]
+    )
 
-    self.last_answered_date = today
-    save!
+    # 投稿データ（紐づくクイズも含む）と回答履歴を削除
+    posts.destroy_all
+    quiz_answers.destroy_all
+
+    # 初期データを再投入
+    DemoDataService.seed_for(self)
+
+    reload
   end
 
-  def self.guest
-    find_or_create_by!(email: 'intermediate@example.com') do |user|
-      user.password = SecureRandom.urlsafe_base64
-      user.level = 29
-      user.xp = 1440
-    end
+  # デモユーザーかどうかを判定
+  def demo_user?
+    %w[beginner@example.com expert@example.com].include?(email)
+  end
+
+  # 表示用ユーザー名（名前がなければメールアドレスの@の前を返す）
+  def display_name
+    name.presence || email.split('@').first
+  end
+
+  private
+
+  def reset_daily_generation_count_if_needed
+    return if last_quiz_generated_at.blank?
+
+    # 最後に生成した日が今日でないならリセット
+    return unless last_quiz_generated_at.to_date < Time.current.to_date
+
+    self.daily_quiz_generation_count = 0
+  end
+
+  def set_default_name
+    self.name = email.split('@').first if name.blank? && email.present?
   end
 end

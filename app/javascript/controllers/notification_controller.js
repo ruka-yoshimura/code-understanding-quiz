@@ -19,22 +19,40 @@ export default class extends Controller {
   }
 
   enqueue(action) {
-    this.constructor.queue.push(action);
+    this.constructor.queue.push({ action: action, element: this.element });
     this.processQueue();
   }
 
   processQueue() {
+    // 復旧ロジック: Swalが表示されていないのに「処理中」になっている場合は解除する
+    if (this.constructor.isProcessing && !Swal.isVisible()) {
+      this.constructor.isProcessing = false;
+    }
+
     if (this.constructor.isProcessing) return;
     if (this.constructor.queue.length === 0) return;
 
     this.constructor.isProcessing = true;
-    const action = this.constructor.queue.shift();
+    const actionData = this.constructor.queue.shift();
+    const action = actionData.action;
+    const element = actionData.element; // 要素への参照を保持
 
-    action().then(() => {
-      this.constructor.isProcessing = false;
-      // Small delay between notifications for better UX
-      setTimeout(() => this.processQueue(), 300);
-    });
+    action()
+      .then(() => {
+        this.constructor.isProcessing = false;
+
+        // 通知が完了したら要素を削除
+        if (element) element.remove();
+
+        // Small delay between notifications for better UX
+        setTimeout(() => this.processQueue(), 300);
+      })
+      .catch(() => {
+        // エラー時もフラグをリセットして次へ
+        this.constructor.isProcessing = false;
+        if (element) element.remove(); // エラー時も削除
+        this.processQueue();
+      });
   }
 
   async showNotification() {
@@ -73,15 +91,16 @@ export default class extends Controller {
   async levelUp() {
     const level = this.levelValue;
     const title = this.titleValue;
+    const timer = this.timerValue;
 
     return Swal.fire({
       title: "Level Up!",
       html: `レベル <strong>${level}</strong> に到達しました！<br>称号: <strong>${title}</strong>`,
       icon: "success",
-      confirmButtonText: "やった！",
+      timer: timer,
+      showConfirmButton: false,
       buttonsStyling: false,
       customClass: {
-        confirmButton: "button primary",
         popup: "quiz-card",
         title: "text-success",
       },

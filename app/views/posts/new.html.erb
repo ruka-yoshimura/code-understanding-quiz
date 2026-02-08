@@ -1,12 +1,15 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <h1>コードの新規投稿</h1>
+<div class="max-w-2xl mx-auto py-8 px-4">
+  <div class="glass p-8 md:p-12 rounded-3xl shadow-2xl">
+    <div class="mb-10 text-center px-2">
+      <h1 class="text-2xl md:text-3xl font-black text-white italic tracking-tighter mb-2">コードの新規投稿 ✍️</h1>
+      <p class="text-slate-500 text-sm">あなたのコードからクイズを生成します。</p>
+    </div>
 
     <%= form_with model: @post, local: true do |form| %>
     <% if @post.errors.any? %>
-    <div class="alert">
-      <p><%= @post.errors.count %> 件のエラーにより保存できませんでした:</p>
-      <ul>
+    <div class="mb-8 p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
+      <p class="text-rose-400 text-sm font-bold mb-2"><%= @post.errors.count %> 件のエラーにより保存できませんでした:</p>
+      <ul class="list-disc list-inside text-rose-400/80 text-xs space-y-1">
         <% @post.errors.full_messages.each do |message| %>
         <li><%= message %></li>
         <% end %>
@@ -14,23 +17,27 @@
     </div>
     <% end %>
 
-    <div class="form-field">
-      <%= form.label :title, "タイトル" %>
-      <%= form.text_field :title, placeholder: "プログラムの目的など" %>
-    </div>
+    <div class="space-y-8">
+      <div>
+        <%= form.label :title, "タイトル", class: "form-label" %>
+        <%= form.text_field :title, placeholder: "プログラムの概要", class: "form-input" %>
+      </div>
 
-    <div class="form-field">
-      <%= form.label :content, "コード" %>
-      <%= form.text_area :content, rows: 12, placeholder: "ここにコードを貼り付けてください" %>
-    </div>
+      <div>
+        <%= form.label :content, "コード", class: "form-label" %>
+        <%= form.text_area :content, rows: 12, placeholder: "ここにコードを貼り付けてください", class: "form-input font-mono text-sm leading-relaxed" %>
+      </div>
 
-    <div class="form-actions">
-      <%= form.submit "投稿してクイズを作成", class: "button primary" %>
+      <div class="pt-4">
+        <%= form.button type: :submit, class: "btn-primary w-full py-4 text-base md:text-lg flex justify-center items-center gap-2" do %>
+        <span>投稿してクイズを作成する</span>
+        <% end %>
+      </div>
     </div>
     <% end %>
 
-    <div class="auth-links">
-      <%= link_to 'ホームに戻る', root_path %>
+    <div class="mt-8 pt-8 border-t border-white/5 text-center">
+      <%= link_to '← ホームに戻る', root_path, class: "text-slate-500 hover:text-slate-300 text-sm transition-colors" %>
     </div>
   </div>
 </div>

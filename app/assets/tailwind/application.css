@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #38bdf8; /* 明るい水色 */
+  --color-primary-dark: #7dd3fc; /* Sky 300 - ホバー時は少し明るく */
+  --color-secondary: #0f172a;
+  --color-accent: #10b981;
+  --color-surface: #1e293b;
+  --color-background: #0f172a;
+
+  --animate-float: float 3s ease-in-out infinite;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-slate-100 antialiased selection:bg-primary/30;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-slate-900/70 backdrop-blur-md border border-white/10;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 bg-primary hover:bg-primary-dark !text-slate-950 font-black rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] cursor-pointer inline-flex items-center justify-center;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-surface hover:bg-slate-700 !text-slate-300 font-bold rounded-xl border border-white/5 transition-all text-center inline-flex items-center justify-center;
+  }
+
+  .is-correct {
+    @apply !bg-emerald-500/20 !border-emerald-500 !text-emerald-400 !shadow-[0_0_15px_rgba(16,185,129,0.3)];
+  }
+
+  .is-incorrect {
+    @apply !bg-rose-500/20 !border-rose-500 !text-rose-400 !shadow-[0_0_15px_rgba(244,63,94,0.3)];
+  }
+
+  .form-input {
+    @apply block w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all;
+  }
+
+  .form-label {
+    @apply block text-sm font-bold text-slate-400 mb-2;
+  }
+
+  /* フラッシュメッセージの統合 */
+  .flash-message {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 p-4 rounded-xl font-bold border-2;
+  }
+
+  .flash-message.notice {
+    @apply bg-emerald-500/10 text-emerald-400 border-emerald-500/20;
+  }
+
+  .flash-message.alert {
+    @apply bg-rose-500/10 text-rose-400 border-rose-500/20;
+  }
+
+  .turbo-progress-bar {
+    @apply h-1 bg-primary shadow-[0_0_10px_rgba(56,189,248,0.8)];
+  }
+}

@@ -61,11 +61,13 @@ RSpec.describe QuizzesController, type: :controller do
         allow(service).to receive_messages(call: nil, error_type: :rate_limit)
       end
 
-      it '適切なエラーメッセージが表示されること' do
+      it '適切なエラーメッセージが表示され、ルートパスにリダイレクトされること' do
+        # システム投稿がないことを確実にする
+        User.where(email: 'system@example.com').destroy_all
         post :create, params: { post_id: post_record.id }
 
-        expect(response).to redirect_to(post_path(post_record))
-        expect(flash[:alert]).to include('APIの利用制限')
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to include('AI生成が一時的に利用できません')
       end
     end
 

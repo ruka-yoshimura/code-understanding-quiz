@@ -11,9 +11,18 @@ RSpec.describe Post, type: :model do
   end
 
   describe 'バリデーションの検証' do
-    # 現在Postモデルにはバリデーションが設定されていないため、後で追加することを検討
     it '有効なファクトリを持つこと' do
       expect(build(:post)).to be_valid
+    end
+
+    it 'タイトルが必須であること' do
+      post = build(:post, title: nil)
+      expect(post).not_to be_valid
+    end
+
+    it 'コードの内容が必須であること' do
+      post = build(:post, content: nil)
+      expect(post).not_to be_valid
     end
   end
 end

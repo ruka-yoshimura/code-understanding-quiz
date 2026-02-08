@@ -1,49 +1,57 @@
-<div class="index-header">
-  <div style="flex: 1;">
-    <h1>生成したクイズ一覧</h1>
-    <p style="color: #94a3b8;">あなたが生成したクイズの履歴とステータスです。</p>
-  </div>
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
   <div>
-    <%= link_to "間違えた問題のみ見る", reviews_path, class: "button secondary", style: "border-color: #f43f5e; color: #f43f5e;" %>
-    <%= link_to "ホームに戻る", root_path, class: "button secondary", style: "margin-left: 10px;" %>
+    <h1 class="text-3xl font-black text-white mb-2 tracking-tight">生成したクイズ一覧</h1>
+    <p class="text-slate-400 text-sm">あなたが生成したクイズの履歴とステータスです。</p>
+  </div>
+  <div class="flex gap-3 w-full md:w-auto">
+    <%= link_to reviews_path, class: "flex-1 md:flex-none py-2.5 px-4 rounded-xl border border-rose-500/30 text-rose-400 text-sm font-bold hover:bg-rose-500/10 transition-all text-center" do %>
+    間違えた問題のみ 🙅
+    <% end %>
+    <%= link_to root_path, class: "flex-1 md:flex-none py-2.5 px-4 rounded-xl border border-white/10 bg-white/5 text-slate-300 text-sm font-bold hover:bg-white/10 transition-all text-center" do %>
+    ホームへ
+    <% end %>
   </div>
 </div>
 
 <% if @quizzes.any? %>
-<div class="posts">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
   <% @quizzes.each do |quiz| %>
-  <div class="post-card" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
-    <div style="flex: 1;">
-      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-        <% if @solved_quiz_ids.include?(quiz.id) %>
-        <span class="status-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid rgba(16, 185, 129, 0.4);">
-          ✅ 正解済み
-        </span>
-        <% else %>
-        <span class="status-badge" style="background: rgba(244, 63, 94, 0.2); color: #f43f5e; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid rgba(244, 63, 94, 0.4);">
-          ❌ 未正解
-        </span>
-        <% end %>
-        <span style="font-size: 0.8rem; color: #94a3b8;">
-          <%= quiz.created_at.strftime("%Y/%m/%d %H:%M") %>
-        </span>
-      </div>
-
-      <h3 style="color: #e2e8f0; margin: 0 0 10px 0;"><%= quiz.question %></h3>
-      <%# 元のコードリンクはボタンとして分離するため削除 %>
+  <div class="glass p-6 rounded-2xl flex flex-col hover:translate-y-[-4px] transition-all duration-300 group">
+    <div class="flex items-center justify-between mb-4">
+      <% if @solved_quiz_ids.include?(quiz.id) %>
+      <span class="text-[10px] uppercase font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+        ✅ 正解済み
+      </span>
+      <% elsif @weak_quiz_ids.include?(quiz.id) %>
+      <span class="text-[10px] uppercase font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded">
+        ❌ 不正解（要復習）
+      </span>
+      <% else %>
+      <span class="text-[10px] uppercase font-bold text-slate-500 bg-white/5 border border-white/10 px-2 py-0.5 rounded">
+        未挑戦
+      </span>
+      <% end %>
+      <span class="text-[10px] font-mono text-slate-600">
+        <%= quiz.created_at.strftime("%Y/%m/%d") %>
+      </span>
     </div>
 
-    <div style="display: flex; gap: 10px;">
-      <%= link_to "元のコード", post_path(quiz.post), class: "button secondary", style: "font-size: 0.8rem; white-space: nowrap; border-color: #3b82f6; color: #3b82f6;" %>
-      <%= link_to "再挑戦", quiz_path(quiz), class: "button secondary", style: "font-size: 0.8rem; white-space: nowrap;" %>
+    <h3 class="text-lg font-bold text-white mb-6 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+      <%= quiz.question %>
+    </h3>
+
+    <div class="mt-auto grid grid-cols-2 gap-3">
+      <%= link_to "元のコード", post_path(quiz.post), class: "py-2 px-3 rounded-xl border border-blue-500/20 bg-blue-500/5 text-blue-400 text-xs font-bold text-center hover:bg-blue-500/10 transition-all" %>
+      <%= link_to "再挑戦", quiz_path(quiz), class: "py-2 px-3 rounded-xl border border-white/10 bg-white/10 text-white text-xs font-black text-center hover:bg-primary hover:border-primary transition-all" %>
     </div>
   </div>
   <% end %>
 </div>
 <% else %>
-<div class="quiz-card" style="text-align: center; padding: 60px;">
-  <h3>まだクイズが生成されていません</h3>
-  <p style="color: #94a3b8; margin-top: 10px;">コードを投稿して、AIにクイズを作ってもらいましょう！</p>
-  <%= link_to "新規投稿する", new_post_path, class: "button primary", style: "margin-top: 20px;" %>
+<div class="glass p-12 md:p-20 rounded-3xl text-center">
+  <div class="text-6xl mb-6">📝</div>
+  <h3 class="text-xl font-bold text-white mb-2">まだクイズが生成されていません</h3>
+  <p class="text-slate-400 text-sm mb-8">コードを投稿して、AIにクイズを作ってもらいましょう！</p>
+  <%= link_to "新規投稿する", new_post_path, class: "btn-primary inline-block px-8 py-3" %>
 </div>
 <% end %>

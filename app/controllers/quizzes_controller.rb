@@ -5,9 +5,11 @@ class QuizzesController < ApplicationController
 
   def index
     # ユーザーが投稿したコードから生成されたクイズ一覧
-    @quizzes = Quiz.joins(:post).where(posts: { user_id: current_user.id }).order(created_at: :desc)
+    @quizzes = Quiz.includes(:post).where(posts: { user_id: current_user.id }).order(created_at: :desc)
     # 正解済みのクイズIDを取得して、ビューでの判定に使用
     @solved_quiz_ids = current_user.quiz_answers.where(correct: true).pluck(:quiz_id)
+    # 不正解（要復習）のクイズIDを取得
+    @weak_quiz_ids = current_user.weak_quizzes.map(&:id)
   end
 
   def show
@@ -18,6 +20,11 @@ class QuizzesController < ApplicationController
     post = Post.find(params[:post_id])
     # 既存の問題文を取得して重複を避ける
     existing_questions = post.quizzes.pluck(:question)
+
+    unless current_user.can_generate_quiz?
+      redirect_to official_posts_path, alert: "1日のクイズ生成上限（#{User::DAILY_QUIZ_LIMIT}回）に達しました。続きは公式ドリルで学習しましょう！"
+      return
+    end
 
     begin
       service = QuizGeneratorService.new(post.content, existing_questions, current_user.level)
@@ -34,14 +41,13 @@ class QuizzesController < ApplicationController
         )
 
         if @quiz.save
+          current_user.increment_quiz_generation_count!
           redirect_to @quiz, notice: 'クイズを作成しました！'
         else
           redirect_to post_path(post), alert: 'クイズの保存に失敗しました。'
         end
-      elsif service.error_type == :rate_limit
-        redirect_to post_path(post), alert: 'APIの利用制限に達しました。1分ほど待ってから再度お試しください。'
       else
-        # 生成失敗（APIエラーなど）時のフォールバック
+        # 生成失敗（レートリミット、APIエラーなど）時のフォールバック
         handle_api_error
       end
     rescue StandardError => e
@@ -55,7 +61,7 @@ class QuizzesController < ApplicationController
   def handle_api_error
     official_drill_exists = Post.joins(:user).exists?(users: { email: 'system@example.com' })
     if official_drill_exists
-      redirect_to official_posts_path, alert: 'AI生成が一時的に利用できません。公式ドリルでXPを稼ぎましょう！'
+      redirect_to official_posts_path, alert: 'AI生成が一時的に利用できません。公式ドリルで経験値を稼ぎましょう！'
     else
       redirect_to root_path, alert: 'AI生成が一時的に利用できません。'
     end

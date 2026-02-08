@@ -1,33 +1,37 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <h2><%= t('.sign_in') %></h2>
+<div class="max-w-md mx-auto py-12 px-4">
+  <div class="glass p-8 md:p-10 rounded-3xl shadow-2xl relative">
+    <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-primary/20 rounded-2xl blur-2xl"></div>
+
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-black text-white italic tracking-tighter"><%= t('.sign_in') %></h2>
+    </div>
 
     <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-    <div class="form-field">
-      <%= f.label :email %>
-      <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "example@email.com" %>
-    </div>
+    <div class="space-y-6">
+      <div>
+        <%= f.label :email, class: "form-label" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "example@email.com", class: "form-input" %>
+      </div>
 
-    <div class="form-field">
-      <%= f.label :password %>
-      <%= f.password_field :password, autocomplete: "current-password", placeholder: "••••••••" %>
-    </div>
+      <div>
+        <%= f.label :password, class: "form-label" %>
+        <%= f.password_field :password, autocomplete: "current-password", placeholder: "••••••••", class: "form-input" %>
+      </div>
 
-    <% if devise_mapping.rememberable? %>
-    <div class="form-field">
-      <label class="field-checkbox">
-        <%= f.check_box :remember_me %>
-        <span><%= t('.remember_me') %></span>
-      </label>
+      <% if devise_mapping.rememberable? %>
+      <div class="flex items-center gap-3">
+        <%= f.check_box :remember_me, class: "w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary focus:ring-offset-slate-900" %>
+        <span class="text-sm text-slate-400 font-medium"><%= t('.remember_me') %></span>
+      </div>
+      <% end %>
+
+      <div>
+        <%= f.submit t('.sign_in'), class: "btn-primary w-full py-4 rounded-2xl" %>
+      </div>
     </div>
     <% end %>
 
-    <div class="form-actions">
-      <%= f.submit t('.sign_in'), class: "button primary" %>
-    </div>
-    <% end %>
-
-    <div class="auth-links">
+    <div class="mt-8 pt-8 border-t border-white/5 text-center">
       <%= render "devise/shared/links" %>
     </div>
   </div>

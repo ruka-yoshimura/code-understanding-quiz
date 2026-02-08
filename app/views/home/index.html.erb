@@ -1,135 +1,216 @@
 <% if user_signed_in? %>
-<section class="profile-dashboard">
-  <div class="dashboard-layout">
-    <div class="dashboard-main">
-      <div class="dashboard-header">
-        <div class="user-info">
-          <h2>こんにちは、<%= current_user.email.split('@').first %> さん</h2>
-          <div class="user-title-display" style="justify-content: flex-start;">
-            <span class="rank-badge <%= user_rank_class(current_user) %>" id="dashboard-user-title"><%= user_title(current_user) %></span>
-          </div>
-          <p>あなたのコード理解を深め、レベルアップを目指しましょう！</p>
-        </div>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">現在のレベル</div>
-          <div class="stat-value"><%= current_user.level %></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">現在のXP</div>
-          <div class="stat-value" id="dashboard-user-xp"><%= current_user.xp %></div>
-        </div>
-        <div class="stat-card" id="user-streak-container">
-          <div class="stat-label">連続回答</div>
-          <div class="stat-value">🔥 <span id="dashboard-user-daily-streak"><%= current_user.daily_streak %></span> 日</div>
-        </div>
-        <div class="stat-card" style="cursor: pointer; transition: transform 0.2s;" onclick="location.href='<%= quizzes_path %>'">
-          <div class="stat-label">生成したクイズ</div>
-          <div class="stat-value"><%= current_user.posts.joins(:quizzes).count %> 問</div>
-          <div style="font-size: 0.8rem; color: #94a3b8; text-align: right; margin-top: 5px;">履歴を見る →</div>
-        </div>
-        <div class="stat-card" style="cursor: pointer; transition: transform 0.2s;" onclick="location.href='<%= official_posts_path %>'">
-          <div class="stat-label" style="color: #10b981;">公式ドリル</div>
-          <div class="stat-value" style="font-size: 1rem; color: #10b981;">挑戦する →</div>
-        </div>
-      </div>
-
-      <div class="xp-section" id="user-xp-section">
-        <div class="xp-label-row">
-          <span>次のレベルまで</span>
-          <span id="dashboard-user-xp-percentage-text"><%= current_user.xp %> / <%= current_user.required_xp_for_next_level %> XP</span>
-        </div>
-        <div class="xp-progress-bar">
-          <div class="xp-progress-fill" id="dashboard-user-xp-progress-fill" style="width: <%= current_user.xp_progress_percentage %>%"></div>
-        </div>
-      </div>
-    </div>
-
-    <%# 側面の特別アクションエリア %>
-    <div class="dashboard-sidebar">
-      <div class="review-action-card">
-        <div class="icon">📊</div>
-        <h3>学習分析</h3>
-        <div style="display: flex; flex-direction: column; gap: 8px; margin: 10px 0; font-size: 0.85rem;">
-          <%
-             total_answers = current_user.quiz_answers.count
-             incorrect_answers = current_user.quiz_answers.where(correct: false).count
-             correct_rate = total_answers > 0 ? ((total_answers - incorrect_answers).to_f / total_answers * 100).round : 0
-          %>
-          <div style="display: flex; justify-content: space-between;">
-            <span style="color: #94a3b8;">回答数:</span>
-            <span><%= total_answers %> 問</span>
-          </div>
-          <div style="display: flex; justify-content: space-between;">
-            <span style="color: #f43f5e;">間違い:</span>
-            <span><%= incorrect_answers %> 問</span>
-          </div>
-          <div style="display: flex; justify-content: space-between;">
-            <span style="color: #10b981;">正解率:</span>
-            <span><%= correct_rate %> %</span>
-          </div>
-        </div>
-        <%= link_to "間違えた問題に再挑戦 (#{current_user.weak_quizzes.count})", reviews_path, class: "button primary", style: "width: 100%; box-sizing: border-box; font-size: 0.8rem; text-align: center;" %>
-      </div>
-    </div>
-  </div>
-</section>
-
-<%# デモレベル切り替えパネル（デモユーザーのみ表示） %>
-<% if ['beginner@example.com', 'intermediate@example.com', 'expert@example.com'].include?(current_user.email) %>
-<section class="demo-switcher-section" style="margin: 20px 0; padding: 20px; background: rgba(30, 41, 59, 0.5); border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.1);">
-  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <div style="font-size: 1.5rem;">🧪</div>
+<%# 1. デモレベル切り替えパネル（デモユーザーのみ表示） %>
+<% if ['beginner@example.com', 'expert@example.com'].include?(current_user.email) %>
+<section class="mb-6">
+  <div class="glass p-4 rounded-2xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 flex items-center justify-center bg-slate-800 rounded-xl text-xl shadow-inner">🧪</div>
       <div>
-        <h3 style="margin: 0; font-size: 1rem;">デモレベル切り替え</h3>
-        <p style="margin: 0; font-size: 0.8rem; color: #94a3b8;">レビュー用にユーザーの状態を即座に切り替えられます</p>
+        <h3 class="text-base font-bold text-white mb-0.5">デモレベル切り替え</h3>
+        <p class="text-xs text-slate-400">プレビュー用に状態を即座に切り替えられます</p>
       </div>
     </div>
-    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-      <%= link_to "初級レベル (Lv.1)", users_demo_sign_in_path(level: 1), data: { "turbo-method": :post }, class: "button secondary", style: "font-size: 0.8rem; padding: 10px 20px; border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981;" %>
-      <%= link_to "中級レベル (Lv.29)", users_demo_sign_in_path(level: 29), data: { "turbo-method": :post }, class: "button secondary", style: "font-size: 0.8rem; padding: 10px 20px; border: 1px solid rgba(59, 130, 246, 0.3); color: #3b82f6;" %>
-      <%= link_to "上級レベル (Lv.49)", users_demo_sign_in_path(level: 49), data: { "turbo-method": :post }, class: "button secondary", style: "font-size: 0.8rem; padding: 10px 20px; border: 1px solid rgba(245, 158, 11, 0.3); color: #f59e0b;" %>
+    <div class="flex flex-wrap gap-2">
+      <%= link_to "初級 (Lv.1)", users_demo_sign_in_path(level: 1), data: { "turbo-method": :post }, class: "flex-1 px-5 py-2 rounded-lg border border-accent/30 text-accent font-bold hover:bg-accent/10 transition-colors text-center text-xs" %>
+      <%= link_to "上級 (Lv.49)", users_demo_sign_in_path(level: 49), data: { "turbo-method": :post }, class: "flex-1 px-5 py-2 rounded-lg border border-orange-500/30 text-orange-500 font-bold hover:bg-orange-500/10 transition-colors text-center text-xs" %>
     </div>
   </div>
 </section>
 <% end %>
 
-<div class="index-header">
-  <h1>マイコード (<%= current_user.posts.count %>)</h1>
-  <%= link_to "新規投稿", new_post_path, class: "button primary" %>
+<%# 2. メインエリア (2:1 グリッド) %>
+<section class="mb-8">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+    <%# 左側: 統計情報とアクションボタン %>
+    <div class="lg:col-span-2 flex flex-col gap-4">
+      <div class="glass p-4 md:p-5 rounded-2xl flex-1 flex flex-col justify-between">
+        <div>
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-4">
+            <div>
+              <h2 class="text-lg md:text-xl font-bold text-white mb-0.5">こんにちは、<%= current_user.display_name %> さん</h2>
+              <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+                <span class="<%= user_rank_class(current_user) %> text-[9px] py-0 px-1.5" id="dashboard-user-title"><%= user_title(current_user) %></span>
+                <p class="text-slate-400 text-[10px]">コードを理解し、レベルアップを目指しましょう！</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+            <div class="bg-white/5 p-3 rounded-xl border border-white/5">
+              <div class="text-slate-400 text-[9px] mb-0.5 uppercase tracking-wider font-semibold">現在のレベル</div>
+              <div class="text-2xl font-black text-white" id="dashboard-user-level"><%= current_user.level %></div>
+            </div>
+            <div class="bg-white/5 p-3 rounded-xl border border-white/5">
+              <div class="text-slate-400 text-[9px] mb-0.5 uppercase tracking-wider font-semibold">通算XP</div>
+              <div class="text-2xl font-black text-primary" id="dashboard-user-xp"><%= current_user.total_xp %></div>
+            </div>
+            <div class="bg-white/5 p-3 rounded-xl border border-white/5 col-span-2 md:col-span-1" id="user-streak-container">
+              <div class="text-slate-400 text-[9px] mb-0.5 uppercase tracking-wider font-semibold">連続回答</div>
+              <div class="text-2xl font-black text-orange-400">🔥 <span id="dashboard-user-daily-streak"><%= current_user.daily_streak %></span> <span class="text-[10px] font-medium text-slate-500">日</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white/5 p-3 rounded-xl border border-white/5" id="user-xp-section">
+          <div class="flex justify-between items-end mb-2">
+            <span class="text-[10px] font-semibold text-slate-300">次のレベルまで</span>
+            <div class="text-right flex flex-col items-end" id="dashboard-user-xp-percentage-text">
+              <span class="text-xs font-mono text-slate-400">あと <strong class="text-white text-sm"><%= current_user.xp_until_next_level %></strong> XP</span>
+              <span class="text-[10px] font-mono text-slate-400">(<%= current_user.xp %> / <%= current_user.required_xp_for_next_level %> XP)</span>
+            </div>
+          </div>
+          <div class="h-3 bg-slate-800 rounded-full overflow-hidden border border-white/10 shadow-inner mt-2 relative">
+            <div class="h-full bg-gradient-to-r from-primary via-blue-400 to-blue-500 rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(56,189,248,0.6)]" id="dashboard-user-xp-progress-fill" style="width: <%= current_user.xp_progress_percentage %>%"></div>
+          </div>
+        </div>
+      </div>
+
+      <%# 生成したクイズと公式ドリルを横並びに配置 %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="glass p-4 rounded-2xl cursor-pointer group hover:border-primary/30 transition-all hover:bg-slate-800/80 flex justify-between items-center" onclick="location.href='<%= quizzes_path %>'">
+          <div>
+            <div class="text-slate-400 text-[10px] mb-1 uppercase tracking-wider font-semibold">生成したクイズ</div>
+            <div class="text-xl font-bold text-white"><%= current_user.posts.joins(:quizzes).count %> <span class="text-xs font-normal text-slate-500">問</span></div>
+          </div>
+          <div class="text-xs text-primary group-hover:translate-x-1 transition-transform">履歴 →</div>
+        </div>
+        <div class="glass p-4 rounded-2xl cursor-pointer group hover:border-accent/30 transition-all hover:bg-slate-800/80 border-accent/10 flex justify-between items-center" onclick="location.href='<%= official_posts_path %>'">
+          <div>
+            <div class="text-accent text-[10px] mb-1 uppercase tracking-wider font-semibold">公式ドリル</div>
+            <div class="text-xl font-bold text-white">挑戦する</div>
+          </div>
+          <div class="text-xs text-accent group-hover:translate-x-1 transition-transform">一覧 →</div>
+        </div>
+      </div>
+    </div>
+
+    <%# 右側: 学習分析 %>
+    <div class="lg:col-span-1">
+      <div class="glass p-6 rounded-2xl relative overflow-hidden group h-full flex flex-col justify-between">
+        <div class="absolute -right-4 -top-4 text-6xl opacity-10 group-hover:scale-110 transition-transform">📊</div>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-4">学習分析</h3>
+          <div class="flex flex-col gap-4 mb-6">
+            <% stats = current_user.learning_stats %>
+            <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+              <span class="text-slate-400 text-sm">総回答数</span>
+              <span class="font-bold text-white text-lg"><%= stats[:total_answers] %> <span class="text-xs font-normal text-slate-500 ml-1">回</span></span>
+            </div>
+            <div class="flex justify-between items-center bg-rose-500/5 p-3 rounded-xl border border-rose-500/10">
+              <span class="text-rose-400/80 text-sm font-medium">未正解の問題</span>
+              <span class="font-bold text-rose-500 text-lg"><%= stats[:weak_count] %> <span class="text-xs font-normal text-rose-500/50 ml-1">問</span></span>
+            </div>
+            <div class="flex justify-between items-center bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10">
+              <span class="text-emerald-400/80 text-sm font-medium">正解率</span>
+              <span class="font-bold text-emerald-500 text-lg"><%= stats[:correct_rate] %> <span class="text-xs font-normal text-emerald-500/50 ml-1">%</span></span>
+            </div>
+          </div>
+        </div>
+        <%= link_to reviews_path, class: "btn-primary w-full block text-center py-3 text-sm flex items-center justify-center gap-2" do %>
+        <span>間違えた問題に再挑戦 (<%= current_user.weak_quizzes.count %>)</span>
+        <span class="text-lg">🔥</span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<%# 3. マイコード (下部・3列配置) %>
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+  <h1 class="text-2xl font-black text-white flex items-center gap-3">
+    マイコード
+    <span class="text-base font-medium text-slate-500 bg-white/5 px-2 py-0.5 rounded-lg border border-white/5"><%= current_user.posts.count %></span>
+  </h1>
+  <%= link_to "新規投稿", new_post_path, class: "btn-primary py-2 px-6 text-sm" %>
 </div>
 
-<div class="posts">
+<% if @posts.any? %>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
   <% @posts.each do |post| %>
-  <div class="post-card">
-    <h2 style="margin-top:0;"><%= link_to post.title, post %></h2>
-    <p style="font-size: 0.875rem; color: #94a3b8;">
-      作成日: <%= post.created_at.strftime("%Y/%m/%d") %> | 生成クイズ: <%= post.quizzes.count %> 問
+  <div class="glass p-6 rounded-2xl flex flex-col hover:translate-y-[-4px] transition-all duration-300 group">
+    <div class="flex items-center justify-between mb-4">
+      <span class="text-[10px] uppercase font-bold text-slate-500 bg-white/5 border border-white/10 px-2 py-0.5 rounded">
+        📝 <%= post.quizzes.count %> 問
+      </span>
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] font-mono text-slate-400">
+          <%= post.created_at.strftime("%Y/%m/%d") %>
+        </span>
+        <% unless current_user.demo_user? %>
+        <%= button_to post_path(post), method: :delete, form: { data: { turbo_confirm: 'この投稿とすべてのクイズを削除しますか？' }, class: "inline" }, class: "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/5 bg-white/5 hover:bg-rose-500/10 hover:border-rose-500/30 text-slate-400 hover:text-rose-400 transition-all", title: "投稿を削除する", id: "delete-post-#{post.id}" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+        <span class="text-xs font-bold">削除</span>
+        <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <h2 class="text-xl font-bold text-white mb-2 leading-tight group-hover:text-primary transition-colors line-clamp-1">
+      <%= link_to post.title, post %>
+    </h2>
+
+    <p class="text-slate-400 text-sm mb-6 line-clamp-3 leading-relaxed font-mono break-all">
+      <%= post.content %>
     </p>
-    <p><%= truncate(post.content, length: 150) %></p>
-    <%= link_to "クイズに挑戦する →", post, class: "button secondary", style: "margin-top: 10px; font-size: 0.875rem;" %>
+
+    <div class="mt-auto">
+      <%= link_to post, class: "flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 text-sm font-bold transition-all" do %>
+      <span>クイズに挑戦する</span>
+      <span class="text-xs group-hover:translate-x-1 transition-transform">→</span>
+      <% end %>
+    </div>
   </div>
   <% end %>
 </div>
 <% else %>
-<div class="hero-section">
-  <div class="hero-content">
-    <h1>Code Understanding Quiz</h1>
-    <p class="hero-description">
-      AIがあなたのコードからクイズを生成。<br>
+<div class="glass p-8 md:p-10 rounded-3xl text-center border-dashed border-white/10">
+  <div class="mb-4">
+    <span class="text-4xl">📝</span>
+  </div>
+  <h3 class="text-xl font-bold text-white mb-2">まだ投稿がありません</h3>
+  <p class="text-slate-400 text-sm mb-6 max-w-sm mx-auto">あなたが書いたコードや、AIに生成してもらったコードを投稿して、クイズで理解を深めましょう！</p>
+  <%= link_to new_post_path, class: "btn-primary px-8 py-3" do %>
+  最初のコードを投稿する
+  <% end %>
+</div>
+<% end %>
+
+
+<% else %>
+<%# ヒーローセクション（未ログイン） %>
+<div class="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
+  <div class="absolute inset-0 z-0">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full"></div>
+    <div class="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-accent/10 blur-[100px] rounded-full animate-float"></div>
+  </div>
+
+  <div class="relative z-10 text-center max-w-3xl px-4">
+    <h1 class="font-black text-white mb-6 md:mb-10 tracking-tighter leading-[0.85] flex flex-col items-center md:block">
+      <span class="text-3xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl block md:inline">Code</span>
+      <span class="text-primary italic text-3xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl block md:inline">Understanding</span>
+      <span class="text-3xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl block md:inline">Quiz</span>
+    </h1>
+    <p class="text-sm md:text-xl text-slate-400 mb-8 md:mb-12 leading-relaxed">
+      AIがあなたのコードからクイズを自動生成。<br class="hidden md:block">
       コードを深く理解し、レベルアップを目指しましょう !
     </p>
-    <div class="hero-actions" style="display: flex; flex-direction: column; gap: 20px; align-items: center; width: 100%;">
-      <div style="display: flex; gap: 15px; width: 100%; max-width: 400px;">
-        <%= link_to "新規登録", new_user_registration_path, class: "button primary", style: "flex: 1; text-align: center;" %>
-        <%= link_to "ログイン", new_user_session_path, class: "button secondary", style: "flex: 1; text-align: center;" %>
+
+    <div class="flex flex-col items-center gap-4 md:gap-6">
+      <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+        <%= link_to "新規登録", new_user_registration_path, class: "btn-primary py-3.5 md:py-4 text-center grow" %>
+        <%= link_to "ログイン", new_user_session_path, class: "btn-secondary py-3.5 md:py-4 text-center grow" %>
       </div>
-      <div style="text-align: center; margin-top: 10px; background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2); width: 100%; max-width: 400px;">
-        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 10px;">デモ用です。サンプルデータが入っています。</p>
-        <%= link_to "ゲストログインで体験する", users_guest_sign_in_path, data: { "turbo-method": :post }, class: "button primary", style: "display: block; width: 100%; padding: 12px; font-size: 1rem; background: linear-gradient(135deg, #3b82f6, #2563eb); box-sizing: border-box;" %>
+
+      <div class="w-full max-w-md p-5 md:p-10 rounded-3xl glass relative group text-center">
+        <div class="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+        <p class="text-slate-500 text-xs md:text-sm mb-4 md:mb-6">デモ用です。サンプルデータが入っています。</p>
+        <%= link_to users_guest_sign_in_path, data: { "turbo-method": :post }, class: "btn-primary w-full py-4 md:py-5 text-base md:text-xl relative overflow-hidden group shadow-[0_0_40px_rgba(14,165,233,0.3)]" do %>
+        <span class="relative z-10 text-slate-950">ゲストログインで体験する</span>
+        <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <% end %>
       </div>
     </div>
   </div>

@@ -8,13 +8,14 @@ Rails.application.routes.draw do
   end
   root 'home#index'
   resources :reviews, only: [:index]
-  resources :posts, only: %i[index show new create] do
+  resources :posts, only: %i[index show new create destroy] do
     collection do
       get :official
     end
   end
   devise_for :users, controllers: {
-    sessions: 'users/sessions'
+    sessions: 'users/sessions',
+    registrations: 'users/registrations'
   }
 
   devise_scope :user do

@@ -80,5 +80,10 @@ end
 # Google Gemini API
 gem 'ruby-gemini-ai'
 
+# Markdown rendering
+gem 'redcarpet'
+
 # Manage environment variables
 gem 'dotenv-rails', groups: %i[development test]
+
+gem 'tailwindcss-rails', '~> 4.4'

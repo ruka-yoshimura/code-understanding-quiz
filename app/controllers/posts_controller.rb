@@ -4,11 +4,11 @@ class PostsController < ApplicationController
   before_action :authenticate_user!, except: %i[show official]
 
   def show
-    @post = Post.find(params[:id])
+    @post = Post.includes(:quizzes).find(params[:id])
   end
 
   def official
-    @posts = Post.joins(:user).where(users: { email: 'system@example.com' }).order(created_at: :desc)
+    @posts = Post.joins(:user).includes(:quizzes).where(users: { email: 'system@example.com' }).order(created_at: :desc)
   end
 
   def new
@@ -22,6 +22,18 @@ class PostsController < ApplicationController
     else
       render :new, status: :unprocessable_content
     end
+  end
+
+  def destroy
+    @post = current_user.posts.find(params[:id])
+
+    if current_user.demo_user?
+      redirect_to root_path, alert: 'デモユーザーはコードを削除できません。'
+      return
+    end
+
+    @post.destroy
+    redirect_to root_path, notice: 'コードを削除しました。'
   end
 
   private
