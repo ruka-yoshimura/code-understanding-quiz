@@ -47,7 +47,13 @@ RSpec.describe '投稿の削除機能', type: :system do
   end
 
   context 'デモユーザーの場合' do
-    let(:demo_user) { create(:user, email: 'beginner@example.com') }
+    let(:demo_user) do
+      User.find_or_create_by!(email: 'beginner@example.com') do |u|
+        u.password = 'password'
+        u.level = 1
+        u.xp = 0
+      end
+    end
     let!(:demo_post) { create(:post, user: demo_user, title: 'デモ投稿') }
 
     before do

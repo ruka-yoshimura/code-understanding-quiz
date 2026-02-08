@@ -73,7 +73,7 @@ RSpec.describe PostsController, type: :controller do
 
         it 'newテンプレートが再表示されること' do
           post :create, params: invalid_params
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response).to render_template(:new)
         end
       end

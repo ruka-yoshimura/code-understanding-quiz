@@ -83,7 +83,11 @@ RSpec.describe 'Quizzes', type: :request do
     context 'AI生成が失敗した場合（フォールバック）' do
       it '公式ドリルが存在すれば公式ドリル一覧にリダイレクトされること' do
         # システムユーザーと公式投稿を用意
-        system_user = create(:user, email: 'system@example.com')
+        system_user = User.find_or_create_by!(email: 'system@example.com') do |u|
+          u.password = 'password'
+          u.level = 99
+          u.xp = 0
+        end
         create(:post, user: system_user)
 
         allow(generator_service).to receive_messages(call: nil, error_type: :api_error)
