@@ -9,9 +9,11 @@ RSpec.describe '投稿の削除機能', type: :request do
   let(:other_user) { create(:user) }
   let!(:user_post) { create(:post, user: user) }
   let(:other_post) { create(:post, user: other_user) }
-  let!(:quiz) { create(:quiz, post: user_post) }
 
-  before { sign_in user }
+  before do
+    sign_in user
+    create(:quiz, post: user_post)
+  end
 
   describe 'DELETE /posts/:id' do
     context '自分の投稿を削除する場合' do
