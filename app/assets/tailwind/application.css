@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@source "../../views/**/*.erb";
+@source "../../helpers/**/*.rb";
+@source "../../javascript/**/*.js";
 
 @theme {
   --color-primary: #38bdf8; /* 明るい水色 */
