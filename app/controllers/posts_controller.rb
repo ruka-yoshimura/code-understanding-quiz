@@ -4,11 +4,11 @@ class PostsController < ApplicationController
   before_action :authenticate_user!, except: %i[show official]
 
   def show
-    @post = Post.find(params[:id])
+    @post = Post.includes(:quizzes).find(params[:id])
   end
 
   def official
-    @posts = Post.joins(:user).where(users: { email: 'system@example.com' }).order(created_at: :desc)
+    @posts = Post.joins(:user).includes(:quizzes).where(users: { email: 'system@example.com' }).order(created_at: :desc)
   end
 
   def new

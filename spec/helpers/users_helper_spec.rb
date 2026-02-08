@@ -1,59 +1,47 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe UsersHelper, type: :helper do
-  describe '#user_rank_class' do
-    let(:user) { build(:user, xp: 0) }
+  describe '#user_title' do
+    subject { helper.user_title(user) }
 
-    context 'レベル1-9の場合（ビギナー）' do
-      before { allow(user).to receive(:level).and_return(5) }
+    let(:user) { create(:user, level: level) }
 
-      it 'slate系のスタイルクラスを返すこと' do
-        expect(helper.user_rank_class(user)).to include('bg-slate-500/20').and include('text-slate-400')
-      end
+    context 'Lv 1-9' do
+      let(:level) { 5 }
+
+      it { is_expected.to eq 'ビギナー' }
     end
 
-    context 'レベル10-19の場合（見習い）' do
-      before { allow(user).to receive(:level).and_return(15) }
+    context 'Lv 10-19' do
+      let(:level) { 15 }
 
-      it 'emerald系のスタイルクラスを返すこと' do
-        expect(helper.user_rank_class(user)).to include('bg-emerald-500/20').and include('text-emerald-400')
-      end
+      it { is_expected.to eq '見習いエンジニア' }
     end
 
-    context 'レベル20-29の場合（探究者）' do
-      before { allow(user).to receive(:level).and_return(25) }
+    context 'Lv 20-29' do
+      let(:level) { 25 }
 
-      it 'blue系のスタイルクラスを返すこと' do
-        expect(helper.user_rank_class(user)).to include('bg-blue-500/20').and include('text-blue-400')
-      end
+      it { is_expected.to eq 'コードの探究者' }
     end
 
-    context 'レベル30-39の場合（スペシャリスト）' do
-      before { allow(user).to receive(:level).and_return(35) }
+    context 'Lv 30-39' do
+      let(:level) { 35 }
 
-      it 'purple系のスタイルクラスを返すこと' do
-        expect(helper.user_rank_class(user)).to include('bg-purple-500/20').and include('text-purple-400')
-      end
+      it { is_expected.to eq 'コードスペシャリスト' }
     end
 
-    context 'レベル40-49の場合（マスター）' do
-      before { allow(user).to receive(:level).and_return(45) }
+    context 'Lv 40-49' do
+      let(:level) { 45 }
 
-      it 'rose系のスタイルクラスを返すこと' do
-        expect(helper.user_rank_class(user)).to include('bg-rose-500/20').and include('text-rose-400')
-      end
+      it { is_expected.to eq 'コードマスター' }
     end
 
-    context 'レベル50以上の場合（レジェンド）' do
-      before { allow(user).to receive(:level).and_return(55) }
+    context 'Lv 50' do
+      let(:level) { 50 }
 
-      it 'amber系のスタイルクラスを返すこと' do
-        expect(helper.user_rank_class(user)).to include('bg-amber-500/20').and include('text-amber-400')
-      end
-    end
-
-    it '共通のスタイルクラスが含まれていること' do
-      expect(helper.user_rank_class(user)).to include('inline-block').and include('rounded-full')
+      it { is_expected.to eq 'レジェンド' }
     end
   end
 end

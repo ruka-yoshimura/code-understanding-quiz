@@ -68,4 +68,8 @@
   .flash-message.alert {
     @apply bg-rose-500/10 text-rose-400 border-rose-500/20;
   }
+
+  .turbo-progress-bar {
+    @apply h-1 bg-primary shadow-[0_0_10px_rgba(56,189,248,0.8)];
+  }
 }

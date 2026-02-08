@@ -7,9 +7,7 @@ class DemoDataService
 
   def seed_for(user)
     case user.email
-    when 'beginner@example.com'
-      create_demo_data(user)
-    when 'expert@example.com'
+    when 'beginner@example.com', 'expert@example.com'
       create_demo_data(user)
     end
   end
@@ -66,10 +64,12 @@ class DemoDataService
         question: 'C::X の値は何ですか？', answer: '2', option_1: '1', option_2: 'Error', explanation: 'クラス自身の定数がインクルードしたモジュールの定数より優先されます。'
       } },
       { title: '動的メソッド', code: 'class A; def method_missing(m, *args); m.to_s; end; end; p A.new.hello', quiz: {
-        question: 'A.new.hello の実行結果は？', answer: '"hello"', option_1: 'NoMethodError', option_2: 'nil', explanation: 'method_missing は定義されていないメソッドが呼ばれたときに実行され、メソッド名を引数として受け取ります。'
+        question: 'A.new.hello の実行結果は？', answer: '"hello"', option_1: 'NoMethodError', option_2: 'nil',
+        explanation: 'method_missing は定義されていないメソッドが呼ばれたときに実行され、メソッド名を引数として受け取ります。'
       } },
       { title: '特異クラスの参照', code: 'obj = Object.new; class << obj; def hi; "hi"; end; end; p obj.hi', quiz: {
-        question: 'obj.hi の実行結果は？', answer: '"hi"', option_1: 'NoMethodError', option_2: 'nil', explanation: 'class << obj 構文を使うことで、特定のオブジェクト（特異クラス）にメソッドを定義できます。'
+        question: 'obj.hi の実行結果は？', answer: '"hi"', option_1: 'NoMethodError', option_2: 'nil',
+        explanation: 'class << obj 構文を使うことで、特定のオブジェクト（特異クラス）にメソッドを定義できます。'
       } }
     ]
   end

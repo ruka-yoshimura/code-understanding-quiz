@@ -50,8 +50,15 @@
         </span>
       </div>
 
-      <%= button_to quizzes_path(post_id: @post.id), method: :post, class: "btn-primary w-full py-4 text-lg", form: { data: { turbo: false } } do %>
-      AIで新しいクイズを作る ✨
+      <%= button_to quizzes_path(post_id: @post.id), method: :post,
+          class: "btn-primary w-full py-4 text-lg",
+          form: {
+            data: {
+              controller: "loading",
+              action: "submit->loading#submit"
+            }
+          } do %>
+      <span data-loading-target="text" data-loading-target-button="button">AIで新しいクイズを作る ✨</span>
       <% end %>
     </div>
     <% end %>

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Quizzes', type: :request do
@@ -84,8 +86,7 @@ RSpec.describe 'Quizzes', type: :request do
         system_user = create(:user, email: 'system@example.com')
         create(:post, user: system_user)
 
-        allow(generator_service).to receive(:call).and_return(nil)
-        allow(generator_service).to receive(:error_type).and_return(:api_error)
+        allow(generator_service).to receive_messages(call: nil, error_type: :api_error)
 
         post quizzes_path(post_id: post_record.id)
         expect(response).to redirect_to(official_posts_path)
@@ -96,8 +97,7 @@ RSpec.describe 'Quizzes', type: :request do
         # system@example.com のユーザーがいない状態
         User.where(email: 'system@example.com').destroy_all
 
-        allow(generator_service).to receive(:call).and_return(nil)
-        allow(generator_service).to receive(:error_type).and_return(:api_error)
+        allow(generator_service).to receive_messages(call: nil, error_type: :api_error)
 
         post quizzes_path(post_id: post_record.id)
         expect(response).to redirect_to(root_path)

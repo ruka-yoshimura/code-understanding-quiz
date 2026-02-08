@@ -189,6 +189,19 @@ class User < ApplicationRecord
     [(xp.to_i.to_f / required_xp_for_next_level * 100).round, 100].min
   end
 
+  # ユーザーの学習統計を取得
+  def learning_stats
+    total = quiz_answers.count
+    return { total_answers: 0, weak_count: 0, correct_rate: 0 } if total.zero?
+
+    incorrect_count = quiz_answers.where(correct: false).count
+    {
+      total_answers: total,
+      weak_count: weak_quizzes.count,
+      correct_rate: (((total - incorrect_count).to_f / total) * 100).round
+    }
+  end
+
   # ユーザーが間違えたことのあるクイズを取得
   # （一度も正解していない、または最新の回答が不正解のもの）
   def weak_quizzes

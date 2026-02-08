@@ -19,7 +19,7 @@
     <span class="text-[10px] font-mono text-slate-400">(<%= current_user.xp %> / <%= current_user.required_xp_for_next_level %> XP)</span>
   <% end %>
   <%= turbo_stream.replace "dashboard-user-xp-progress-fill" do %>
-    <div class="xp-progress-fill" id="dashboard-user-xp-progress-fill" style="width: <%= xp_progress %>%"></div>
+    <div class="h-full bg-gradient-to-r from-primary via-blue-400 to-blue-500 rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(56,189,248,0.6)]" id="dashboard-user-xp-progress-fill" style="width: <%= xp_progress %>%"></div>
   <% end %>
 
   <%# ストリークの更新 %>
@@ -27,9 +27,9 @@
   <% if current_user.daily_streak > 0 %>
     <%# ダッシュボードのカードにクラスを追加するための処理 %>
     <%= turbo_stream.replace "user-streak-container" do %>
-      <div class="stat-card streak-highlight" id="user-streak-container">
-        <div class="stat-label">連続回答</div>
-        <div class="stat-value">🔥 <span id="dashboard-user-daily-streak"><%= current_user.daily_streak %></span> 日</div>
+      <div class="bg-white/5 p-3 rounded-xl border border-white/5 col-span-2 md:col-span-1" id="user-streak-container">
+        <div class="text-slate-400 text-[9px] mb-0.5 uppercase tracking-wider font-semibold">連続回答</div>
+        <div class="text-2xl font-black text-orange-400">🔥 <span id="dashboard-user-daily-streak"><%= current_user.daily_streak %></span> <span class="text-[10px] font-medium text-slate-500">日</span></div>
       </div>
     <% end %>
   <% end %>
