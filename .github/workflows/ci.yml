@@ -22,6 +22,7 @@ jobs:
       RAILS_ENV: test
       DATABASE_URL: "postgres://rails:password@localhost:5432/rails_test"
       GEMINI_API_KEY: "dummy_key_for_ci"
+      SECRET_KEY_BASE: "dummy_secret_key_base_for_test"
 
     steps:
       - name: Checkout code
@@ -39,6 +40,9 @@ jobs:
 
       - name: Run RuboCop
         run: bundle exec rubocop
+
+      - name: Build assets
+        run: bundle exec rails tailwindcss:build
 
       - name: Run tests
         run: bundle exec rspec
