@@ -9,7 +9,7 @@
 ## アプリのスクリーンショット
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/8c7b5bdc-cefe-45c1-ab33-bcb1033cd7c3" width="90%">
+  <img src="https://github.com/user-attachments/assets/e4a974af-6ec7-4f35-9ab0-9602f2e6a33d" width="90%">
 </p>
 
 ### 【デモ動画：クイズ生成の様子】
@@ -17,6 +17,10 @@
 <p align="center">
   <img src="https://github.com/user-attachments/assets/0a335270-241b-41c9-adf6-d72068c03d1e" width="90%">
 </p>
+
+## サービスのURL
+
+https://code-understanding-quiz.onrender.com/
 
 ## アプリの使い方
 
