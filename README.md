@@ -102,6 +102,7 @@ erDiagram
 - **Infrastructure**: Render
 - **Testing**: RSpec / Selenium (System Spec)
 - **Linter**: RuboCop
+- **CI/CD**: GitHub Actions
 
 ## 今後の展望（追加予定の機能）
 
