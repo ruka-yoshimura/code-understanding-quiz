@@ -20,7 +20,7 @@
 
 ## サービスのURL
 
-https://code-understanding-quiz.onrender.com/
+https://codeunderstandingquiz.dpdns.org/
 
 ## アプリの使い方
 
@@ -46,6 +46,7 @@ AIが何でもやってくれる今だからこそ、ただ動くだけで満足
 
 ## 工夫したところ（技術的なこだわり）
 
+- **セキュアな本番環境の構築**: AWS上にUbuntuサーバーを構築。NginxとLet's Encryptを用いた常時HTTPS化や、CloudflareによるDNS管理を行うなど、実運用を想定したセキュアでパフォーマンスの高いインフラ構成を実現しました。
 - **AIプロンプトの最適化**: 回答の選択肢が紛らわしくなりすぎず、かつ本質を突いたものになるよう、システムプロンプトの調整を繰り返しました。
 - **自分にぴったりの難易度**: AIが今の自分のレベルに合わせて問題を調整してくれるので、無理なく一歩ずつ進めます。
 - **ゲーミフィケーション**: ストリーク機能（継続日数）やコンボボーナス、経験値(XP)によるレベル上げ・称号システムを導入し、学習を継続したくなる仕組みを構築しました。
@@ -99,10 +100,10 @@ erDiagram
 - **Frontend**: Tailwind CSS / Hotwire (Turbo / Stimulus)
 - **Database**: PostgreSQL
 - **AI**: Gemini API
-- **Infrastructure**: Render
+- **Infrastructure**: AWS (EC2 / Ubuntu), Nginx, Cloudflare
+- **SSL**: Let's Encrypt (Certbot)
 - **Testing**: RSpec / Selenium (System Spec)
 - **Linter**: RuboCop
-- **CI/CD**: GitHub Actions
 
 ## 今後の展望（追加予定の機能）
 
